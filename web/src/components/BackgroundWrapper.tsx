@@ -12,6 +12,7 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({ children }) => {
         <div className="cloud-blob blob-1"></div>
         <div className="cloud-blob blob-2"></div>
         <div className="cloud-blob blob-3"></div>
+        <div className="cloud-blob blob-4"></div>
         <div className="bg-overlay-noise"></div>
       </div>
       

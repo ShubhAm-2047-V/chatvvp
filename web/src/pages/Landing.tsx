@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)] overflow-hidden selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
+    <div className="min-h-screen text-[var(--on-surface)] overflow-hidden selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 glass px-6 py-4 flex justify-between items-center transition-all duration-300">
         <div className="flex items-center gap-2">
@@ -58,7 +58,6 @@ const Landing = () => {
             transition={{ duration: 1.2, delay: 0.2 }}
             className="relative"
           >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--primary-dim)] opacity-20 blur-[120px] rounded-full"></div>
             <HeroScene />
           </motion.div>
         </div>

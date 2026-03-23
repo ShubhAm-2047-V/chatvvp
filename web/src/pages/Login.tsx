@@ -32,10 +32,8 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[var(--surface)]">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[120px] rounded-full"></div>
 
       <div className="w-full max-w-md z-10">
         <div className="flex flex-col items-center mb-10">
