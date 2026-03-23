@@ -1,0 +1,26 @@
+# node_modules
+node_modules/
+web/node_modules/
+api/node_modules/
+
+# Build
+web/dist/
+web/dist-ssr/
+
+# Environment
+.env
+web/.env.local
+api/.env
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.log
+api/npm-debug.log*
+
+# Temp / Cache
+.parcel-cache/
+web/.vite/
+web/.claude/
