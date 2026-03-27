@@ -1,14 +1,15 @@
-# Dependencies
+# Keep essential configs
+!.env
+!.env.*
+!*.log
+
+# Dependencies (Excluded to keep repo manageable)
 node_modules/
+.expo/
+
+# Build artifacts
 dist/
 build/
-.expo/
-*.log
-
-# Sensitive
-.env
-.env.*
-!.env.example
 
 # OS
 .DS_Store

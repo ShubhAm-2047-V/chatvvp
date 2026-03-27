@@ -1,0 +1,17 @@
+t=2026-03-25T23:17:56+0530 lvl=info msg="no configuration paths supplied"
+t=2026-03-25T23:17:56+0530 lvl=info msg="using configuration at default config path" path=C:\\Users\\SHUBHAM\\AppData\\Local/ngrok/ngrok.yml
+t=2026-03-25T23:17:56+0530 lvl=info msg="open config file" path=C:\\Users\\SHUBHAM\\AppData\\Local\\ngrok\\ngrok.yml err=nil
+t=2026-03-25T23:17:56+0530 lvl=info msg="FIPS 140 mode" enabled=false
+t=2026-03-25T23:17:56+0530 lvl=warn msg="can't bind default web address, trying alternatives" obj=web addr=127.0.0.1:4040
+t=2026-03-25T23:17:56+0530 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4043 allow_hosts=[]
+t=2026-03-25T23:17:57+0530 lvl=info msg="client session established" obj=tunnels.session
+t=2026-03-25T23:17:57+0530 lvl=info msg="tunnel session started" obj=tunnels.session
+t=2026-03-25T23:17:57+0530 lvl=eror msg="session closing" obj=tunnels.session err="failed to start tunnel: The endpoit=2026-03-25T23:18:07+0530 lvl=info msg=start pg=/api/tunnels id=8816e5e0560d0bc3
+t=2026-03-25T23:18:07+0530 lvl=info msg=end pg=/api/tunnels id=8816e5e0560d0bc3 status=200 dur=506.6µs
+t=2026-03-25T23:19:24+0530 lvl=info msg="received stop request" obj=app stopReq="{err:<nil> restart:false}"
+t=2026-03-25T23:19:24+0530 lvl=info msg="session closing" obj=tunnels.session err=nil
+t=2026-03-25T23:19:24+0530 lvl=info msg="accept failed" obj=tunnels.session obj=csess id=49a38e650fdb err="reconnecting session closed"
+=app stopReq="{err:{Inner:{Inner:0xc000187700}} restart:false}"
+t=2026-03-25T23:17:57+0530 lvl=eror msg="terminating with error" obj=app err="failed to start tunnel: The endpoint 'https://apterygote-tammi-gushingly.ngrok-free.dev' is already online. Either\n1. stop your existing endpoint first, or\n2. start both endpoints with `--pooling-enabled` to load balance between them.\r\n\r\nERR_NGROK_334\r\n"
+t=2026-03-25T23:17:57+0530 lvl=warn msg="failed to check for update" obj=updater err="Post \"https://update.ngrok-agent.com/check\": context canceled"
+t=2026-03-25T23:17:57+0530 lvl=crit msg="command failed" err="failed to start tunnel: The endpoint 'https://apterygote-tammi-gushingly.ngrok-free.dev' is already online. Either\n1. stop your existing endpoint first, or\n2. start both endpoints with `--pooling-enabled` to load balance between them.\r\n\r\nERR_NGROK_334\r\n"
