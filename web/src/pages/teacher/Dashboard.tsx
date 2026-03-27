@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { useNavigate } from 'react-router-dom';
 import { BarChart3, BookOpen, Clock, Trash2, ExternalLink, Plus, Layout } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { StaggeredText, FadeUpText } from '../../components/AnimatedText';
 
 const TeacherDashboard: React.FC = () => {
   const [stats, setStats] = useState({ totalNotes: 0, totalViews: 0 });
@@ -33,6 +35,9 @@ const TeacherDashboard: React.FC = () => {
       try {
         await api.delete(`/teacher/notes/${noteId}`);
         setMyNotes(myNotes.filter(n => n._id !== noteId));
+        // Refresh stats after deletion
+        const statsRes = await api.get('/teacher/stats');
+        setStats(statsRes.data);
       } catch (error) {
         console.error('Failed to delete note:', error);
       }
@@ -48,8 +53,12 @@ const TeacherDashboard: React.FC = () => {
             <Layout size={20} />
             <span className="text-sm font-bold uppercase tracking-widest">Faculty Access</span>
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Teacher Console</h1>
-          <p className="mt-4 text-lg text-[var(--on-surface-variant)]">Orchestrate learning materials and analyze engagement.</p>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight overflow-hidden">
+            <StaggeredText text="Teacher Console" />
+          </h1>
+          <p className="mt-4 text-lg text-[var(--on-surface-variant)]">
+             <FadeUpText text="Orchestrate learning materials and analyze engagement." delay={0.3} />
+          </p>
         </div>
         <button 
           onClick={() => navigate('/teacher/add-notes')}
@@ -133,7 +142,12 @@ const TeacherDashboard: React.FC = () => {
 };
 
 const StatsCard = ({ icon, label, value, subtitle }: { icon: any, label: string, value: any, subtitle: string }) => (
-  <div className="bento-card border border-white/5 p-8 flex flex-col justify-between group cursor-default">
+  <motion.div 
+    whileHover={{ scale: 1.05, y: -5, rotateX: 2 }}
+    whileTap={{ scale: 0.95 }}
+    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+    className="bento-card border border-white/5 p-8 flex flex-col justify-between group cursor-default"
+  >
     <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110">
       {icon}
     </div>
@@ -145,7 +159,7 @@ const StatsCard = ({ icon, label, value, subtitle }: { icon: any, label: string,
         {subtitle}
       </div>
     </div>
-  </div>
+  </motion.div>
 );
 
 const TrendingUp = ({ className, size }: { className?: string, size?: number }) => (

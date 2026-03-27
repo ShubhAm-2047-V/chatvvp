@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { StaggeredText, FadeUpText } from '../components/AnimatedText';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -62,11 +63,15 @@ const Login: React.FC = () => {
           >
             <img src="/logo.png" alt="Chat.VVP Logo" className="w-full h-full object-contain drop-shadow-2xl" />
           </motion.div>
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-1">
-            CHAT.<span className="text-indigo-400">VVP</span>
+          <h1 className="text-4xl font-bold tracking-tight text-white mb-1 overflow-hidden">
+            <StaggeredText text="CHAT.VVP" />
           </h1>
-          <p className="text-[8px] text-indigo-300 uppercase font-bold tracking-[0.3em] mb-4">College Study Assistant</p>
-          <p className="text-[var(--on-surface-variant)] text-center italic">Your premium digital study sanctuary</p>
+          <p className="text-[8px] text-indigo-300 uppercase font-bold tracking-[0.3em] mb-4">
+            <FadeUpText text="College Study Assistant" delay={0.4} />
+          </p>
+          <p className="text-[var(--on-surface-variant)] text-center italic">
+            <FadeUpText text="Your premium digital study sanctuary" delay={0.6} />
+          </p>
         </motion.div>
 
         <motion.div 

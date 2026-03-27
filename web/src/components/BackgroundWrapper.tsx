@@ -1,22 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import ParticleField from './3d/ParticleField';
 
 const MagneticCursor = () => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Smooth springs for high-end feel
+  const springConfig = { damping: 25, stiffness: 150 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [mouseX, mouseY]);
 
   return (
-    <div 
+    <motion.div 
       className="magnetic-cursor" 
-      style={{ left: mousePos.x, top: mousePos.y }}
+      style={{ 
+        left: smoothX, 
+        top: smoothY,
+        opacity: 0.6
+      }}
     />
   );
 };

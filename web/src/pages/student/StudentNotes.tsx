@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
-import { Search, BookOpen, Clock, ChevronRight, Youtube } from 'lucide-react';
+import { Search, BookOpen, Clock, ChevronRight, Youtube, ChevronLeft, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const NOTES_PER_PAGE = 4;
 
 const StudentNotes: React.FC = () => {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ const StudentNotes: React.FC = () => {
   const [years] = useState<number[]>([1, 2, 3, 4]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -42,6 +45,9 @@ const StudentNotes: React.FC = () => {
     navigate(`/student/notes/${noteId}`);
   };
 
+  const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+  const isFiltering = searchTerm.trim().length > 0 || filterSubject !== '' || filterYear !== '';
+
   const filteredNotes = notes.filter(n => {
     const term = searchTerm.toLowerCase();
     const matchesSearch = !term || 
@@ -50,12 +56,33 @@ const StudentNotes: React.FC = () => {
                           n.cleanedText?.toLowerCase().includes(term);
     const matchesSubject = filterSubject ? n.subject?.toLowerCase() === filterSubject.toLowerCase() : true;
     const matchesYear = filterYear ? n.year === Number(filterYear) : true;
-    return matchesSearch && matchesSubject && matchesYear;
+    
+    // Hide notes older than 2 days unless user is searching OR filtering
+    const isRecent = isFiltering || new Date(n.createdAt) >= twoDaysAgo;
+    
+    return matchesSearch && matchesSubject && matchesYear && isRecent;
   });
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterSubject, filterYear]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredNotes.length / NOTES_PER_PAGE));
+  const paginatedNotes = filteredNotes.slice(
+    (currentPage - 1) * NOTES_PER_PAGE,
+    currentPage * NOTES_PER_PAGE
+  );
 
   const handleSearchTrigger = () => {
     setLoading(true);
-    setTimeout(() => setLoading(false), 300); // Simulate search feel
+    setCurrentPage(1);
+    setTimeout(() => setLoading(false), 300);
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
 
@@ -174,7 +201,7 @@ const StudentNotes: React.FC = () => {
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               <AnimatePresence>
-                {filteredNotes.map((note) => (
+                {paginatedNotes.map((note) => (
                   <motion.div 
                     layout
                     key={note._id} 
@@ -227,6 +254,83 @@ const StudentNotes: React.FC = () => {
                   </motion.div>
                 ))}
               </AnimatePresence>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="col-span-full flex items-center justify-center gap-2 mt-10"
+                >
+                  <button
+                    onClick={() => goToPage(1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-xl border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronsLeft size={16} />
+                  </button>
+                  <button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-xl border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(page => {
+                      if (totalPages <= 5) return true;
+                      if (page === 1 || page === totalPages) return true;
+                      if (Math.abs(page - currentPage) <= 1) return true;
+                      return false;
+                    })
+                    .reduce<(number | string)[]>((acc, page, idx, arr) => {
+                      if (idx > 0 && typeof arr[idx - 1] === 'number' && (page as number) - (arr[idx - 1] as number) > 1) {
+                        acc.push('...');
+                      }
+                      acc.push(page);
+                      return acc;
+                    }, [])
+                    .map((item, idx) => (
+                      typeof item === 'string' ? (
+                        <span key={`dots-${idx}`} className="px-2 text-slate-600 text-sm">•••</span>
+                      ) : (
+                        <motion.button
+                          key={item}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => goToPage(item)}
+                          className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${
+                            currentPage === item
+                              ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
+                              : 'border border-white/10 text-slate-400 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          {item}
+                        </motion.button>
+                      )
+                    ))}
+
+                  <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-xl border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                  <button
+                    onClick={() => goToPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-xl border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronsRight size={16} />
+                  </button>
+
+                  <span className="ml-4 text-xs text-slate-500">
+                    Page {currentPage} of {totalPages} · {filteredNotes.length} notes
+                  </span>
+                </motion.div>
+              )}
             </motion.div>
           )}
         </div>

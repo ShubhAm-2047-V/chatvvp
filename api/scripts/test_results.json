@@ -1,0 +1,482 @@
+[
+  {
+    "iteration": 1,
+    "feature": "Health",
+    "test": "API Health Check",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "API working locally 🚀"
+  },
+  {
+    "iteration": 1,
+    "feature": "Health",
+    "test": "DB Connection",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "connected"
+  },
+  {
+    "iteration": 1,
+    "feature": "Auth",
+    "test": "Admin Login (admin@chatvvp.com)",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 1,
+    "feature": "Auth",
+    "test": "Admin Login (admin@test.com)",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "Role: admin"
+  },
+  {
+    "iteration": 1,
+    "feature": "Auth",
+    "test": "Teacher Login",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 1,
+    "feature": "Auth",
+    "test": "Student Login",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 1,
+    "feature": "Auth",
+    "test": "Invalid Login Rejected",
+    "httpStatus": 401,
+    "pass": true,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 1,
+    "feature": "Admin",
+    "test": "Get Stats",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "Students:1 Teachers:2"
+  },
+  {
+    "iteration": 1,
+    "feature": "Admin",
+    "test": "List Users",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "4 users"
+  },
+  {
+    "iteration": 1,
+    "feature": "Admin",
+    "test": "List Teachers",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "2 teachers"
+  },
+  {
+    "iteration": 1,
+    "feature": "Admin",
+    "test": "Reject No Token",
+    "httpStatus": 401,
+    "pass": true,
+    "detail": "No token provided"
+  },
+  {
+    "iteration": 1,
+    "feature": "Teacher",
+    "test": "Get Stats",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 1,
+    "feature": "Teacher",
+    "test": "My Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 1,
+    "feature": "Teacher",
+    "test": "Personal Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 1,
+    "feature": "Student",
+    "test": "Browse Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 1,
+    "feature": "Student",
+    "test": "View History",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 1,
+    "feature": "Student",
+    "test": "AI Chat",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 1,
+    "feature": "Quiz",
+    "test": "List Quizzes",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "0 quizzes"
+  },
+  {
+    "iteration": 1,
+    "feature": "Auth",
+    "test": "Update Profile",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 1,
+    "feature": "Health",
+    "test": "404 Handler",
+    "httpStatus": 404,
+    "pass": true,
+    "detail": "Route not found: GET /api/nonexistent-route"
+  },
+  {
+    "iteration": 2,
+    "feature": "Health",
+    "test": "API Health Check",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "API working locally 🚀"
+  },
+  {
+    "iteration": 2,
+    "feature": "Health",
+    "test": "DB Connection",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "connected"
+  },
+  {
+    "iteration": 2,
+    "feature": "Auth",
+    "test": "Admin Login (admin@chatvvp.com)",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 2,
+    "feature": "Auth",
+    "test": "Admin Login (admin@test.com)",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "Role: admin"
+  },
+  {
+    "iteration": 2,
+    "feature": "Auth",
+    "test": "Teacher Login",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 2,
+    "feature": "Auth",
+    "test": "Student Login",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 2,
+    "feature": "Auth",
+    "test": "Invalid Login Rejected",
+    "httpStatus": 401,
+    "pass": true,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 2,
+    "feature": "Admin",
+    "test": "Get Stats",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "Students:1 Teachers:2"
+  },
+  {
+    "iteration": 2,
+    "feature": "Admin",
+    "test": "List Users",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "4 users"
+  },
+  {
+    "iteration": 2,
+    "feature": "Admin",
+    "test": "List Teachers",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "2 teachers"
+  },
+  {
+    "iteration": 2,
+    "feature": "Admin",
+    "test": "Reject No Token",
+    "httpStatus": 401,
+    "pass": true,
+    "detail": "No token provided"
+  },
+  {
+    "iteration": 2,
+    "feature": "Teacher",
+    "test": "Get Stats",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 2,
+    "feature": "Teacher",
+    "test": "My Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 2,
+    "feature": "Teacher",
+    "test": "Personal Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 2,
+    "feature": "Student",
+    "test": "Browse Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 2,
+    "feature": "Student",
+    "test": "View History",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 2,
+    "feature": "Student",
+    "test": "AI Chat",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 2,
+    "feature": "Quiz",
+    "test": "List Quizzes",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "0 quizzes"
+  },
+  {
+    "iteration": 2,
+    "feature": "Auth",
+    "test": "Update Profile",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 2,
+    "feature": "Health",
+    "test": "404 Handler",
+    "httpStatus": 404,
+    "pass": true,
+    "detail": "Route not found: GET /api/nonexistent-route"
+  },
+  {
+    "iteration": 3,
+    "feature": "Health",
+    "test": "API Health Check",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "API working locally 🚀"
+  },
+  {
+    "iteration": 3,
+    "feature": "Health",
+    "test": "DB Connection",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "connected"
+  },
+  {
+    "iteration": 3,
+    "feature": "Auth",
+    "test": "Admin Login (admin@chatvvp.com)",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 3,
+    "feature": "Auth",
+    "test": "Admin Login (admin@test.com)",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "Role: admin"
+  },
+  {
+    "iteration": 3,
+    "feature": "Auth",
+    "test": "Teacher Login",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 3,
+    "feature": "Auth",
+    "test": "Student Login",
+    "httpStatus": 401,
+    "pass": false,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 3,
+    "feature": "Auth",
+    "test": "Invalid Login Rejected",
+    "httpStatus": 401,
+    "pass": true,
+    "detail": "Invalid email or password"
+  },
+  {
+    "iteration": 3,
+    "feature": "Admin",
+    "test": "Get Stats",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "Students:1 Teachers:2"
+  },
+  {
+    "iteration": 3,
+    "feature": "Admin",
+    "test": "List Users",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "4 users"
+  },
+  {
+    "iteration": 3,
+    "feature": "Admin",
+    "test": "List Teachers",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "2 teachers"
+  },
+  {
+    "iteration": 3,
+    "feature": "Admin",
+    "test": "Reject No Token",
+    "httpStatus": 401,
+    "pass": true,
+    "detail": "No token provided"
+  },
+  {
+    "iteration": 3,
+    "feature": "Teacher",
+    "test": "Get Stats",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 3,
+    "feature": "Teacher",
+    "test": "My Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 3,
+    "feature": "Teacher",
+    "test": "Personal Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 3,
+    "feature": "Student",
+    "test": "Browse Notes",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 3,
+    "feature": "Student",
+    "test": "View History",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 3,
+    "feature": "Student",
+    "test": "AI Chat",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 3,
+    "feature": "Quiz",
+    "test": "List Quizzes",
+    "httpStatus": 200,
+    "pass": true,
+    "detail": "0 quizzes"
+  },
+  {
+    "iteration": 3,
+    "feature": "Auth",
+    "test": "Update Profile",
+    "httpStatus": 0,
+    "pass": false,
+    "detail": "No token"
+  },
+  {
+    "iteration": 3,
+    "feature": "Health",
+    "test": "404 Handler",
+    "httpStatus": 404,
+    "pass": true,
+    "detail": "Route not found: GET /api/nonexistent-route"
+  }
+]

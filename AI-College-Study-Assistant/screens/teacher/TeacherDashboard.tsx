@@ -9,9 +9,18 @@ import {
   RefreshControl,
   Dimensions,
   Alert,
-  Animated,
-  Easing,
 } from 'react-native';
+import Animated, { 
+  FadeInDown, 
+  FadeInUp, 
+  Layout, 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withRepeat, 
+  withTiming, 
+  withSpring,
+  Easing as ReanimatedEasing
+} from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -34,9 +43,11 @@ export default function TeacherDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const headerAnim = useRef(new Animated.Value(0)).current;
-  const headerSlide = useRef(new Animated.Value(-20)).current;
+  const pulseScale = useSharedValue(1);
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseScale.value }]
+  }));
 
   const fetchStats = async () => {
     try {
@@ -64,33 +75,12 @@ export default function TeacherDashboard() {
   useEffect(() => {
     fetchStats();
     
-    // Header entrance
-    Animated.parallel([
-      Animated.timing(headerAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-      Animated.spring(headerSlide, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true }),
-    ]).start();
-
-    // Pulse animation loop
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.5,
-          duration: 1200,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1200,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-      ])
+    pulseScale.value = withRepeat(
+      withTiming(1.5, { duration: 1200, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
+      -1,
+      true
     );
-    pulse.start();
-    
-    return () => pulse.stop();
-  }, [pulseAnim, headerAnim, headerSlide]);
+  }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -116,7 +106,10 @@ export default function TeacherDashboard() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME_COLORS.primary} />}
       >
-        <Animated.View style={[styles.headerWrapper, { opacity: headerAnim, transform: [{ translateY: headerSlide }] }]}>
+        <Animated.View 
+          entering={FadeInDown.springify()}
+          style={styles.headerWrapper}
+        >
           <BlurView intensity={80} tint="light" style={styles.headerCard}>
             <View>
               <Text style={styles.welcomeLabel}>TEACHER CONSOLE</Text>
@@ -124,7 +117,7 @@ export default function TeacherDashboard() {
               <Text style={styles.welcomeSub}>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Text>
             </View>
             <View style={styles.statusBadge}>
-              <Animated.View style={[styles.pulseDot, { transform: [{ scale: pulseAnim }] }]} />
+              <Animated.View style={[styles.pulseDot, pulseStyle]} />
               <Text style={styles.statusText}>ACTIVE</Text>
             </View>
           </BlurView>

@@ -72,6 +72,7 @@ const aiService = require('./services/aiService');
 const { preprocessImage, cleanOCRText } = require('./utils/ocrHelper');
 const { cleanTextWithAI } = require('./utils/aiHelper');
 const { formatNotes } = require('./utils/noteFormatter');
+const { sendNoteNotification } = require('./utils/emailHelper');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_123';
 
@@ -136,7 +137,7 @@ app.get('/api/admin/stats', async (req, res) => {
   try {
     const totalStudents = await User.countDocuments({ role: 'student' });
     const totalTeachers = await User.countDocuments({ role: 'teacher' });
-    const totalNotes = 124; // Still hardcoded until Note model is integrated
+    const totalNotes = await Note.countDocuments(); // Fixed: No longer hardcoded to 124
 
     res.json({
       totalStudents,
@@ -493,6 +494,25 @@ app.post('/api/teacher/upload-note', verifyToken, verifyRole(['teacher']), uploa
       message: isLowConfidence ? 'Note uploaded with low confidence' : 'Note uploaded successfully',
       note
     });
+
+    // Send email notification to students of same branch & year (non-blocking)
+    try {
+      const students = await User.find({
+        role: 'student',
+        branch: { $regex: new RegExp(`^${branch}$`, 'i') },
+        year: Number(year)
+      });
+      const emails = students.map(s => s.email).filter(Boolean);
+      if (emails.length > 0) {
+        sendNoteNotification(emails, { subject, topic, branch, year }, req.user.name)
+          .then(() => console.log(`📧 Notification sent to ${emails.length} students`))
+          .catch(err => console.error('📧 Email notification error:', err.message));
+      } else {
+        console.log('📧 No students found for', branch, 'Year', year);
+      }
+    } catch (emailErr) {
+      console.error('📧 Email lookup error:', emailErr.message);
+    }
   } catch (err) {
     console.error('Upload error:', err);
     res.status(500).json({ error: err.message });
@@ -533,6 +553,26 @@ app.get('/api/teacher/my-notes', verifyToken, verifyRole(['teacher']), async (re
   }
 });
 
+// 4.1 Teacher Delete Note
+app.delete('/api/teacher/notes/:id', verifyToken, verifyRole(['teacher']), async (req, res) => {
+  try {
+    const note = await Note.findOneAndDelete({ _id: req.params.id, teacherId: req.user._id });
+    if (!note) return res.status(404).json({ message: 'Note not found or not authorized' });
+    
+    // Also cleanup any associated video
+    if (note.youtubeUrl) {
+      await Video.findOneAndDelete({ url: note.youtubeUrl, teacherId: req.user._id });
+    }
+    
+    // Cleanup associated activity
+    await Activity.deleteMany({ refId: req.params.id });
+
+    res.json({ message: 'Note deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // 5. Teacher Create Text Note
 app.post('/api/teacher/text-note', verifyToken, verifyRole(['teacher']), async (req, res) => {
   try {
@@ -552,6 +592,28 @@ app.post('/api/teacher/text-note', verifyToken, verifyRole(['teacher']), async (
       rawText: content
     });
     res.status(201).json({ message: 'Note created', note });
+
+    // Send email notification to students (New: Added for text-notes)
+    try {
+      const students = await User.find({
+        role: 'student',
+        branch: { $regex: new RegExp(`^${branch || 'All'}$`, 'i') },
+        year: Number(year) || 1
+      });
+      const emails = students.map(s => s.email).filter(Boolean);
+      if (emails.length > 0) {
+        sendNoteNotification(emails, { 
+          subject: subject || 'General', 
+          topic: topic || 'Text Note', 
+          branch: branch || 'All', 
+          year: Number(year) || 1 
+        }, req.user.name)
+          .then(() => console.log(`📧 Notification sent to ${emails.length} students for text note`))
+          .catch(err => console.error('📧 Email notification error (text note):', err.message));
+      }
+    } catch (emailErr) {
+      console.error('📧 Email lookup error (text note):', emailErr.message);
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -753,6 +815,56 @@ app.put('/api/teacher/personal-notes/:id', verifyToken, verifyRole(['teacher', '
 });
 
 app.delete('/api/teacher/personal-notes/:id', verifyToken, verifyRole(['teacher', 'admin']), async (req, res) => {
+  try {
+    const note = await PersonalNote.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+    if (!note) return res.status(404).json({ message: 'Note not found' });
+    res.json({ message: 'Note deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 11. Student Personal Notes
+app.get('/api/student/personal-notes', verifyToken, verifyRole(['student']), async (req, res) => {
+  try {
+    const notes = await PersonalNote.find({ user: req.user._id }).sort({ updatedAt: -1 });
+    res.json(notes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/student/personal-notes', verifyToken, verifyRole(['student']), async (req, res) => {
+  try {
+    const { title, content, color } = req.body;
+    const note = await PersonalNote.create({
+      user: req.user._id,
+      title,
+      content,
+      color: color || '#4F46E5'
+    });
+    res.status(201).json(note);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/student/personal-notes/:id', verifyToken, verifyRole(['student']), async (req, res) => {
+  try {
+    const { title, content, color } = req.body;
+    const note = await PersonalNote.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      { title, content, color },
+      { new: true }
+    );
+    if (!note) return res.status(404).json({ message: 'Note not found' });
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/student/personal-notes/:id', verifyToken, verifyRole(['student']), async (req, res) => {
   try {
     const note = await PersonalNote.findOneAndDelete({ _id: req.params.id, user: req.user._id });
     if (!note) return res.status(404).json({ message: 'Note not found' });

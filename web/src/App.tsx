@@ -1,5 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import BackgroundWrapper from './components/BackgroundWrapper';
+import PageTransition from './components/PageTransition';
 import Login from './pages/Login';
 import StudentDashboard from './pages/student/Dashboard';
 import StudentNotes from './pages/student/StudentNotes';
@@ -8,6 +10,7 @@ import StudentHistory from './pages/student/History';
 import StudentAI from './pages/student/StudentAI';
 import QuizList from './pages/student/QuizList';
 import QuizDetail from './pages/student/QuizDetail';
+import StudentPersonalNotes from './pages/student/PersonalNotes';
 import TeacherDashboard from './pages/teacher/Dashboard';
 import TeacherAddNotes from './pages/teacher/AddNotes';
 import TeacherAI from './pages/teacher/TeacherAI';
@@ -32,18 +35,20 @@ const PrivateRoute = ({ children, allowedRole }: { children: React.ReactNode, al
   );
 };
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+
   return (
-    <Router>
-      <BackgroundWrapper>
-        <Routes>
-          <Route path="/login" element={<Login />} />
+    <BackgroundWrapper>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
           
           <Route 
             path="/student" 
             element={
               <PrivateRoute allowedRole="student">
-                <StudentDashboard />
+                <PageTransition><StudentDashboard /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -51,7 +56,7 @@ function App() {
             path="/student/notes" 
             element={
               <PrivateRoute allowedRole="student">
-                <StudentNotes />
+                <PageTransition><StudentNotes /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -59,7 +64,7 @@ function App() {
             path="/student/notes/:id" 
             element={
               <PrivateRoute allowedRole="student">
-                <NoteDetail />
+                <PageTransition><NoteDetail /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -67,7 +72,7 @@ function App() {
             path="/student/ai" 
             element={
               <PrivateRoute allowedRole="student">
-                <StudentAI />
+                <PageTransition><StudentAI /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -75,7 +80,7 @@ function App() {
             path="/student/quizzes" 
             element={
               <PrivateRoute allowedRole="student">
-                <QuizList />
+                <PageTransition><QuizList /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -83,7 +88,7 @@ function App() {
             path="/student/quiz/:id" 
             element={
               <PrivateRoute allowedRole="student">
-                <QuizDetail />
+                <PageTransition><QuizDetail /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -91,7 +96,15 @@ function App() {
             path="/student/history" 
             element={
               <PrivateRoute allowedRole="student">
-                <StudentHistory />
+                <PageTransition><StudentHistory /></PageTransition>
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/student/personal-notes" 
+            element={
+              <PrivateRoute allowedRole="student">
+                <PageTransition><StudentPersonalNotes /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -99,7 +112,7 @@ function App() {
             path="/teacher" 
             element={
               <PrivateRoute allowedRole="teacher">
-                <TeacherDashboard />
+                <PageTransition><TeacherDashboard /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -107,7 +120,7 @@ function App() {
             path="/teacher/add-notes" 
             element={
               <PrivateRoute allowedRole="teacher">
-                <TeacherAddNotes />
+                <PageTransition><TeacherAddNotes /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -115,7 +128,7 @@ function App() {
             path="/teacher/ai" 
             element={
               <PrivateRoute allowedRole="teacher">
-                <TeacherAI />
+                <PageTransition><TeacherAI /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -123,7 +136,7 @@ function App() {
             path="/teacher/personal-notes" 
             element={
               <PrivateRoute allowedRole="teacher">
-                <PersonalNotes />
+                <PageTransition><PersonalNotes /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -131,7 +144,7 @@ function App() {
             path="/admin" 
             element={
               <PrivateRoute allowedRole="admin">
-                <AdminDashboard />
+                <PageTransition><AdminDashboard /></PageTransition>
               </PrivateRoute>
             } 
           />
@@ -139,14 +152,22 @@ function App() {
             path="/admin/users" 
             element={
               <PrivateRoute allowedRole="admin">
-                <AdminUsersList />
+                <PageTransition><AdminUsersList /></PageTransition>
               </PrivateRoute>
             } 
           />
 
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
         </Routes>
-      </BackgroundWrapper>
+      </AnimatePresence>
+    </BackgroundWrapper>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

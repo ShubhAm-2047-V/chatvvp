@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, Shield, ArrowRight, Github } from 'lucide-react';
 import HeroScene from '../components/3d/HeroScene';
 import { Link } from 'react-router-dom';
+import { StaggeredText, FadeUpText } from '../components/AnimatedText';
 
 const Landing = () => {
   return (
@@ -37,19 +38,26 @@ const Landing = () => {
               <Sparkles className="w-4 h-4 text-[var(--secondary)]" />
               <span className="text-xs font-bold uppercase tracking-widest text-[var(--secondary)]">The Digital Sanctuary</span>
             </div>
-            <h1 className="text-6xl md:text-8xl font-black leading-tight mb-6 tracking-tighter text-glow">
-              Unlock Your <span className="text-gradient">Flow State</span>
+            <h1 className="text-6xl md:text-8xl font-black leading-tight mb-6 tracking-tighter text-glow overflow-hidden">
+              <StaggeredText text="Unlock Your" />
+              <span className="text-gradient">Flow State</span>
             </h1>
             <p className="text-lg md:text-xl text-[var(--on-surface-variant)] leading-relaxed mb-10 max-w-lg">
-              A premium, AI-powered study environment designed for complete immersion. Curate your knowledge, visualize your progress, and master your subjects with crystalline focus.
+              <FadeUpText text="A premium, AI-powered study environment designed for complete immersion. Curate your knowledge, visualize your progress, and master your subjects with crystalline focus." delay={0.4} />
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/login" className="btn-primary scale-110">
-                Launch Dashboard <ArrowRight className="w-5 h-5" />
-              </Link>
-              <button className="btn-secondary">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/login" className="btn-primary scale-110">
+                  Launch Dashboard <ArrowRight className="w-5 h-5" />
+                </Link>
+              </motion.div>
+              <motion.button 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }}
+                className="btn-secondary"
+              >
                 View Vision <Shield className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
           </motion.div>
 
@@ -61,7 +69,7 @@ const Landing = () => {
             className="relative"
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--primary-dim)] opacity-20 blur-[120px] rounded-full"></div>
-            <HeroScene />
+                <HeroScene />
           </motion.div>
         </div>
       </section>
@@ -76,7 +84,9 @@ const Landing = () => {
           
           <div className="grid md:grid-cols-3 gap-6 stagger-reveal">
             <motion.div 
-              whileHover={{ scale: 1.02 }} 
+              whileHover={{ scale: 1.02, rotateY: 1, rotateX: -1 }} 
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="bento-card card-3d-hover holographic-border glitch-hover col-span-1 md:col-span-2 relative overflow-hidden group border border-[var(--outline-variant)] shadow-2xl"
             >
               <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity">
@@ -90,7 +100,9 @@ const Landing = () => {
             </motion.div>
 
             <motion.div 
-              whileHover={{ scale: 1.02 }} 
+              whileHover={{ scale: 1.02, rotateY: -1, rotateX: 1 }} 
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="bento-card card-3d-hover holographic-border glitch-hover relative overflow-hidden group border border-[var(--outline-variant)] shadow-2xl"
             >
               <div className="chip bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4">Security</div>
@@ -99,7 +111,9 @@ const Landing = () => {
             </motion.div>
 
             <motion.div 
-              whileHover={{ scale: 1.02 }} 
+              whileHover={{ scale: 1.02, rotateY: 1, rotateX: 1 }} 
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="bento-card card-3d-hover holographic-border glitch-hover relative overflow-hidden group border border-[var(--outline-variant)] shadow-2xl"
             >
               <div className="chip bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">Immersive</div>
@@ -108,7 +122,9 @@ const Landing = () => {
             </motion.div>
 
             <motion.div 
-              whileHover={{ scale: 1.02 }} 
+              whileHover={{ scale: 1.02, y: -5 }} 
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="bento-card card-3d-hover col-span-1 md:col-span-2 relative overflow-hidden group bg-gradient-to-br from-[var(--surface-container)] to-[var(--surface-container-high)] border border-[var(--outline-variant)]"
             >
               <h3 className="text-3xl font-bold mb-4">Academic Velocity</h3>

@@ -1,35 +1,32 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
+import React from 'react';
+import { Text, StyleSheet, ScrollView } from 'react-native';
+import Animated, { FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { BackgroundWrapper } from '../components/BackgroundWrapper';
 import { THEME_COLORS } from '../constants/theme';
 
 export default function HomeScreen() {
-  const headerAnim = useRef(new Animated.Value(0)).current;
-  const headerSlide = useRef(new Animated.Value(-20)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(headerAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-      Animated.spring(headerSlide, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true }),
-    ]).start();
-  }, [headerAnim, headerSlide]);
-
   return (
     <BackgroundWrapper>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Animated.View style={[styles.headerArea, { opacity: headerAnim, transform: [{ translateY: headerSlide }] }]}>
+        <Animated.View 
+          entering={FadeInDown.springify()}
+          style={styles.headerArea}
+        >
           <Text style={styles.header}>Welcome Back!</Text>
           <Text style={styles.subheader}>Ready to crush your study goals today?</Text>
         </Animated.View>
         
         <Card translucent style={styles.heroCard} delay={200}>
-          <View style={styles.heroInner}>
-            <View>
+          <Animated.View 
+            entering={FadeInUp.delay(300).springify()}
+            style={styles.heroInner}
+          >
+            <Animated.View entering={FadeInDown.delay(400).springify()}>
               <Text style={styles.heroTitle}>Today's Focus</Text>
               <Text style={styles.heroText}>Advanced React Patterns</Text>
-            </View>
+            </Animated.View>
             <Button 
               title="Continue" 
               onPress={() => {}} 
@@ -37,7 +34,7 @@ export default function HomeScreen() {
               style={styles.heroButton} 
               textStyle={styles.heroButtonText}
             />
-          </View>
+          </Animated.View>
         </Card>
 
         <Text style={styles.sectionTitle}>Recent Notes</Text>

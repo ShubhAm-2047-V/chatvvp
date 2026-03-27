@@ -118,7 +118,7 @@ const AdminDashboard: React.FC = () => {
           <h3 className="text-xl font-bold text-white tracking-tight">Identity Registry</h3>
           <span className="chip chip-success !bg-red-500/10 !text-red-400 !border-red-500/20 text-[10px]">Secure</span>
         </div>
-        <div className="overflow-x-auto no-scrollbar">
+        <div className="overflow-x-auto overflow-y-auto max-h-[400px] no-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: '#ef4444 transparent' }}>
           {loading ? (
              <div className="p-20 text-center text-slate-500 italic animate-pulse">Accessing encrypted vault...</div>
           ) : (

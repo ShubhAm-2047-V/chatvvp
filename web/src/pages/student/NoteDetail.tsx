@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { 
-  ChevronLeft, 
+  ChevronLeft,
   Youtube, 
   FileText, 
   Sparkles, 
@@ -236,13 +236,13 @@ const NoteDetail: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="prose prose-invert max-w-none text-slate-300 leading-relaxed font-medium">
-                  {note.formattedText ? (
-                    <div className="whitespace-pre-wrap">{note.formattedText}</div>
+                <div 
+                  className="prose prose-invert max-w-none text-slate-300 leading-relaxed font-medium overflow-y-auto max-h-[500px] pr-4"
+                  style={{ scrollbarWidth: 'thin', scrollbarColor: '#4f46e5 transparent' }}
+                >
+                  {(note.formattedText || note.cleanedText) ? (
+                    <div className="whitespace-pre-wrap">{note.formattedText || note.cleanedText}</div>
                   ) : (
-                    <div className="whitespace-pre-wrap">{note.cleanedText}</div>
-                  )}
-                  {!note.formattedText && !note.cleanedText && (
                     <p className="text-slate-500 italic">No textual content extracted yet.</p>
                   )}
                 </div>

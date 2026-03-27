@@ -10,12 +10,22 @@ import {
   Platform,
   ActivityIndicator,
   Keyboard,
-  Animated,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useRoute } from '@react-navigation/native';
+import Animated, { 
+  FadeIn, 
+  FadeOut, 
+  SlideInLeft, 
+  SlideInRight, 
+  Layout,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring
+} from 'react-native-reanimated';
 import { BackgroundWrapper } from '../../components/BackgroundWrapper';
 import { THEME_COLORS, PIXEL_SHADOWS } from '../../constants/theme';
 import { api } from '../../services/api';
@@ -50,7 +60,11 @@ export default function StudentAIScreen() {
   const [aiHistory, setAiHistory] = useState<AIHistoryItem[]>([]);
   const flatListRef = useRef<FlatList>(null);
   
-  const historyAnim = useRef(new Animated.Value(height)).current;
+  const historyY = useSharedValue(height);
+
+  const historyStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: historyY.value }]
+  }));
 
   const route = useRoute<any>();
 
@@ -63,9 +77,9 @@ export default function StudentAIScreen() {
   useEffect(() => {
     if (showHistory) {
       fetchAIHistory();
-      Animated.spring(historyAnim, { toValue: height * 0.3, useNativeDriver: true, tension: 50, friction: 8 }).start();
+      historyY.value = withSpring(height * 0.3, { damping: 15, stiffness: 100 });
     } else {
-      Animated.spring(historyAnim, { toValue: height, useNativeDriver: true }).start();
+      historyY.value = withSpring(height);
     }
   }, [showHistory]);
 
@@ -131,7 +145,11 @@ export default function StudentAIScreen() {
   }, [messages]);
 
   const renderMessage = ({ item }: { item: Message }) => (
-    <View style={[styles.messageRow, item.sender === 'user' ? styles.userRow : styles.aiRow]}>
+    <Animated.View 
+      entering={item.sender === 'user' ? SlideInRight.springify().damping(18) : SlideInLeft.springify().damping(18)}
+      layout={Layout.springify()}
+      style={[styles.messageRow, item.sender === 'user' ? styles.userRow : styles.aiRow]}
+    >
       <BlurView 
         intensity={item.sender === 'user' ? 20 : 60} 
         tint={item.sender === 'user' ? 'dark' : 'light'} 
@@ -141,7 +159,7 @@ export default function StudentAIScreen() {
           {item.text}
         </Text>
       </BlurView>
-    </View>
+    </Animated.View>
   );
 
   return (
@@ -185,7 +203,7 @@ export default function StudentAIScreen() {
       </KeyboardAvoidingView>
 
       {/* History Sub-panel */}
-      <Animated.View style={[styles.historyPanel, { transform: [{ translateY: historyAnim }] }]}>
+      <Animated.View style={[styles.historyPanel, historyStyle]}>
         <BlurView intensity={95} tint="light" style={styles.historyBlur}>
           <View style={styles.historyHeader}>
             <Text style={styles.historyTitle}>Your Previous Queries</Text>

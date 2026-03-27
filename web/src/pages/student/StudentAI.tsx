@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { api } from '../../services/api';
 import { Sparkles, Send, Bot, User as UserIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { StaggeredText, FadeUpText } from '../../components/AnimatedText';
 
 const StudentAI: React.FC = () => {
   const [messages, setMessages] = useState<any[]>([]);
@@ -76,10 +78,12 @@ const StudentAI: React.FC = () => {
     <div className="max-w-5xl mx-auto py-24 px-4 sm:px-6 lg:px-8 h-[calc(100vh-64px)] flex flex-col">
       <div className="mb-8 flex items-end justify-between">
         <div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight flex items-center gap-4">
-            AI Tutor <Sparkles className="text-indigo-400" size={32} />
+          <h1 className="text-4xl font-extrabold text-white tracking-tight flex items-center gap-4 overflow-hidden">
+            <StaggeredText text="AI Tutor" /> <Sparkles className="text-indigo-400" size={32} />
           </h1>
-          <p className="mt-4 text-lg text-[var(--on-surface-variant)]">The sanctuary of immediate knowledge.</p>
+          <p className="mt-4 text-lg text-[var(--on-surface-variant)]">
+             <FadeUpText text="The sanctuary of immediate knowledge." delay={0.3} />
+          </p>
         </div>
       </div>
 
@@ -95,8 +99,15 @@ const StudentAI: React.FC = () => {
             </div>
           ) : (
             <>
+            <AnimatePresence initial={false}>
               {messages.map((msg, index) => (
-                <div key={index} className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'} animate-fade-in`}>
+                <motion.div 
+                  key={index} 
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}
+                >
                   <div className={`flex items-start gap-4 max-w-[85%] ${msg.isBot ? 'flex-row' : 'flex-row-reverse'}`}>
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border ${msg.isBot ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-white/5 border-white/5 text-slate-400'}`}>
                       {msg.isBot ? <Bot size={20} /> : <UserIcon size={20} />}
@@ -110,8 +121,9 @@ const StudentAI: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
+            </AnimatePresence>
               {loading && (
                 <div className="flex justify-start">
                    <div className="flex items-start gap-4">

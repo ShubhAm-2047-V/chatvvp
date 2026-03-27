@@ -86,7 +86,7 @@ const History: React.FC = () => {
           </button>
         </div>
       ) : (
-        <div className="space-y-6 relative">
+        <div className="space-y-6 relative overflow-y-auto max-h-[500px] pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#6366f1 transparent' }}>
           {/* Vertical Timeline Line */}
           <div className="absolute left-10 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/20 via-white/5 to-transparent hidden md:block"></div>
 

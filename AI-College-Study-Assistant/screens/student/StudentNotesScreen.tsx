@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Linking,
-  Animated,
   Alert,
 } from 'react-native';
+import Animated, { FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -44,21 +44,9 @@ export default function StudentNotesScreen() {
   const [allNotes, setAllNotes] = useState<SearchResult[]>([]);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  const headerAnim = useRef(new Animated.Value(0)).current;
-  const headerSlide = useRef(new Animated.Value(-20)).current;
-  const searchBoxAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     loadProfileAndNotes();
-    
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(headerAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-        Animated.spring(headerSlide, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true }),
-      ]),
-      Animated.timing(searchBoxAnim, { toValue: 1, duration: 400, useNativeDriver: true }),
-    ]).start();
   }, []);
 
   const loadProfileAndNotes = async () => {
@@ -161,7 +149,10 @@ export default function StudentNotesScreen() {
 
   return (
     <BackgroundWrapper noSafeArea>
-      <Animated.View style={[styles.headerWrapper, { opacity: headerAnim, transform: [{ translateY: headerSlide }] }]}>
+      <Animated.View 
+        entering={FadeInDown.springify()}
+        style={styles.headerWrapper}
+      >
         <View style={styles.headerArea}>
             <Text style={styles.header}>Study Library</Text>
             <Text style={styles.subheader}>Curated for your academic success</Text>
@@ -169,7 +160,10 @@ export default function StudentNotesScreen() {
       </Animated.View>
       
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
-          <Animated.View style={[styles.searchBox, { opacity: searchBoxAnim }]}>
+          <Animated.View 
+            entering={FadeInUp.delay(300).springify()}
+            style={styles.searchBox}
+          >
               <View style={styles.profileBadge}>
                 <View style={styles.badgeItem}>
                   <Text style={styles.badgeLabel}>Year</Text>

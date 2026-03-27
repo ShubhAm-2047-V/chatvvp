@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import Animated, { SlideInLeft, SlideInRight, Layout } from 'react-native-reanimated';
 import { BackgroundWrapper } from '../../components/BackgroundWrapper';
 import { THEME_COLORS, PIXEL_SHADOWS } from '../../constants/theme';
 import { api } from '../../services/api';
@@ -92,7 +93,11 @@ export default function TeacherAIScreen() {
   }, [messages]);
 
   const renderMessage = ({ item }: { item: Message }) => (
-    <View style={[styles.messageRow, item.sender === 'user' ? styles.userRow : styles.aiRow]}>
+    <Animated.View 
+      entering={item.sender === 'user' ? SlideInRight.springify().damping(18) : SlideInLeft.springify().damping(18)}
+      layout={Layout.springify()}
+      style={[styles.messageRow, item.sender === 'user' ? styles.userRow : styles.aiRow]}
+    >
       <BlurView 
         intensity={item.sender === 'user' ? 30 : 60} 
         tint={item.sender === 'user' ? 'dark' : 'light'} 
@@ -102,7 +107,7 @@ export default function TeacherAIScreen() {
           {item.text}
         </Text>
       </BlurView>
-    </View>
+    </Animated.View>
   );
 
   return (

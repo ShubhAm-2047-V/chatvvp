@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, ViewStyle, Animated } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
+import Animated, { FadeInDown, FadeOut, Layout } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import { THEME_COLORS, PIXEL_SHADOWS } from '../constants/theme';
 
@@ -11,35 +11,16 @@ interface CardProps {
 }
 
 export default function Card({ children, style, translucent = false, delay = 0 }: CardProps) {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        delay,
-        useNativeDriver: true,
-      }),
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        tension: 50,
-        friction: 7,
-        delay,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [delay, fadeAnim, slideAnim]);
-
-  const animatedStyle = {
-    opacity: fadeAnim,
-    transform: [{ translateY: slideAnim }],
-  };
+  const enteringAnimation = FadeInDown.delay(delay).springify().damping(20).stiffness(150);
 
   if (translucent) {
     return (
-      <Animated.View style={[styles.glassCard, style, animatedStyle]}>
+      <Animated.View 
+        entering={enteringAnimation}
+        exiting={FadeOut}
+        layout={Layout.springify()}
+        style={[styles.glassCard, style]}
+      >
         <BlurView intensity={50} tint="light" style={styles.blurPadding}>
           {children}
         </BlurView>
@@ -48,7 +29,12 @@ export default function Card({ children, style, translucent = false, delay = 0 }
   }
 
   return (
-    <Animated.View style={[styles.card, style, animatedStyle]}>
+    <Animated.View 
+      entering={enteringAnimation}
+      exiting={FadeOut}
+      layout={Layout.springify()}
+      style={[styles.card, style]}
+    >
       {children}
     </Animated.View>
   );

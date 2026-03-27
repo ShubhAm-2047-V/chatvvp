@@ -12,7 +12,6 @@ import {
   ActivityIndicator,
   Alert,
   ImageBackground,
-  Animated,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +20,15 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../services/api';
 import { Logo } from '../components/Logo';
+import Animated, { 
+  FadeInDown, 
+  FadeInUp, 
+  ZoomIn, 
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring
+} from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 
@@ -36,15 +44,19 @@ export default function LoginScreen() {
   const [emailFocus, setEmailFocus] = useState(false);
   const [passFocus, setPassFocus] = useState(false);
 
-  // Animated values for press effect
-  const loginScale = new Animated.Value(1);
+  // Reanimated shared values for press effect
+  const loginScale = useSharedValue(1);
 
-  const handlePressIn = (val: Animated.Value) => {
-    Animated.spring(val, { toValue: 0.96, useNativeDriver: true }).start();
+  const loginAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: loginScale.value }]
+  }));
+
+  const handlePressIn = () => {
+    loginScale.value = withSpring(0.96);
   };
 
-  const handlePressOut = (val: Animated.Value) => {
-    Animated.spring(val, { toValue: 1, friction: 4, useNativeDriver: true }).start();
+  const handlePressOut = () => {
+    loginScale.value = withSpring(1);
   };
 
   const handleLogin = async () => {
@@ -99,10 +111,16 @@ export default function LoginScreen() {
                   </View>
                 </View>
 
-                <View style={styles.header}>
+                <Animated.View 
+                  entering={FadeInDown.delay(200).springify()}
+                  style={styles.header}
+                >
                   <Text style={styles.headerTitle}>CHAT. VVP</Text>
-                </View>
-                <View style={styles.form}>
+                </Animated.View>
+                <Animated.View 
+                  entering={FadeInUp.delay(400).springify()}
+                  style={styles.form}
+                >
                   {/* Email Input */}
                   <View style={styles.inputArea}>
                     <View style={[styles.inputWrapper, emailFocus && styles.inputFocus]}>
@@ -141,12 +159,15 @@ export default function LoginScreen() {
                     </View>
                   </View>
 
-                  <View style={styles.buttonContainer}>
-                    <Animated.View style={{ transform: [{ scale: loginScale }] }}>
+                  <Animated.View 
+                    entering={FadeInUp.delay(600).springify()}
+                    style={styles.buttonContainer}
+                  >
+                    <Animated.View style={loginAnimatedStyle}>
                       <TouchableOpacity
                         activeOpacity={1}
-                        onPressIn={() => handlePressIn(loginScale)}
-                        onPressOut={() => handlePressOut(loginScale)}
+                        onPressIn={handlePressIn}
+                        onPressOut={handlePressOut}
                         onPress={handleLogin}
                         disabled={loading}
                         style={[styles.btn, styles.loginBtn]}
@@ -154,8 +175,8 @@ export default function LoginScreen() {
                         {loading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.btnText}>Login</Text>}
                       </TouchableOpacity>
                     </Animated.View>
-                  </View>
-                </View>
+                  </Animated.View>
+                </Animated.View>
               </BlurView>
             </View>
           </View>

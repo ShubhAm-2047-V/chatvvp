@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { BookOpen, TrendingUp, Clock, ChevronRight, User as UserIcon, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FadeUpText, StaggeredText } from '../../components/AnimatedText';
 
 const StudentDashboard: React.FC = () => {
   const [userName, setUserName] = useState('');
@@ -33,11 +35,11 @@ const StudentDashboard: React.FC = () => {
       
       {/* Hero Greeting */}
       <div className="mb-12">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight text-glow">
-          Good morning, <span className="text-indigo-400">{userName || 'Alex'}</span>.
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight text-glow overflow-hidden">
+          <StaggeredText text={`Good morning, ${userName || 'Alex'}.`} />
         </h1>
         <p className="mt-4 text-lg text-[var(--on-surface-variant)] max-w-2xl">
-          You're in your flow state. You've completed <span className="text-emerald-400 font-bold">75%</span> of your weekly study goals.
+          <FadeUpText text="You're in your flow state. You've completed 75% of your weekly study goals." delay={0.3} />
         </p>
       </div>
 
@@ -47,7 +49,12 @@ const StudentDashboard: React.FC = () => {
         <div className="lg:col-span-2 space-y-8">
           
           {/* AI Tutor Bento Card */}
-          <div className="bento-card card-3d-hover holographic-border glitch-hover border border-indigo-500/20 relative overflow-hidden group p-8 min-h-[300px] flex flex-col justify-between indigo-glow shadow-2xl">
+          <motion.div 
+            whileHover={{ scale: 1.01, rotateY: 2, rotateX: -2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="bento-card card-3d-hover holographic-border glitch-hover border border-indigo-500/20 relative overflow-hidden group p-8 min-h-[300px] flex flex-col justify-between indigo-glow shadow-2xl"
+          >
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none"></div>
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -62,18 +69,20 @@ const StudentDashboard: React.FC = () => {
                 <input 
                   type="text" 
                   placeholder="Ask me anything..."
-                  className="input-premium w-full h-14 pl-6 pr-16 text-lg"
+                  className="input-premium w-full h-14 pl-6 pr-16 text-lg focus:shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all"
                   onKeyPress={(e) => e.key === 'Enter' && navigate('/student/ai')}
                 />
-                <button 
+                <motion.button 
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => navigate('/student/ai')}
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white hover:bg-indigo-400 transition-colors"
                 >
                   <ChevronRight size={24} />
-                </button>
+                </motion.button>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <StatsCard 
@@ -148,7 +157,12 @@ const StudentDashboard: React.FC = () => {
 };
 
 const StatsCard = ({ icon, label, value, subtitle }: { icon: any, label: string, value: any, subtitle: string }) => (
-  <div className="bento-card card-3d-hover holographic-border glitch-hover border border-white/5 p-8 flex flex-col justify-between shadow-xl">
+  <motion.div 
+    whileHover={{ scale: 1.05, y: -10, rotateX: 5 }}
+    whileTap={{ scale: 0.95 }}
+    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+    className="bento-card card-3d-hover holographic-border glitch-hover border border-white/5 p-8 flex flex-col justify-between shadow-xl"
+  >
     <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6">
       {icon}
     </div>
@@ -157,7 +171,7 @@ const StatsCard = ({ icon, label, value, subtitle }: { icon: any, label: string,
       <p className="text-4xl font-extrabold text-white mt-1">{value}</p>
       <p className="text-sm text-[var(--on-surface-variant)] mt-2">{subtitle}</p>
     </div>
-  </div>
+  </motion.div>
 );
 
 export default StudentDashboard;

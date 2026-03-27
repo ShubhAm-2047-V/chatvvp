@@ -6,6 +6,7 @@ import Card from '../components/Card';
 import { THEME_COLORS, THEME_SPACING, THEME_RADIUS } from '../constants/theme';
 import { quizService, Quiz } from '../services/quizService';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 
 export default function QuizListScreen() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -56,10 +57,13 @@ export default function QuizListScreen() {
   return (
     <BackgroundWrapper>
       <View style={styles.container}>
-        <View style={styles.header}>
+        <Animated.View 
+          entering={FadeInDown.springify()}
+          style={styles.header}
+        >
           <Text style={styles.title}>Practice Quizzes</Text>
           <Text style={styles.subtitle}>Test your knowledge and track progress</Text>
-        </View>
+        </Animated.View>
 
         {loading && !refreshing ? (
           <View style={styles.centered}>

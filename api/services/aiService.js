@@ -6,7 +6,7 @@ const axios = require('axios');
 async function explainText(text) {
   if (!text) throw new Error("Text is required");
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = 'gemini-flash-latest';
+  const model = 'gemini-1.5-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   try {
@@ -26,7 +26,7 @@ async function explainText(text) {
  */
 async function chatWithAI(prompt, history = []) {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = 'gemini-flash-latest';
+  const model = 'gemini-1.5-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   try {

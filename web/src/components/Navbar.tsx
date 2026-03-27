@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LogOut, Layout, BookOpen, MessageSquare, ShieldCheck, User as UserIcon, Clock, School } from 'lucide-react';
+import { LogOut, Layout, BookOpen, MessageSquare, ShieldCheck, User as UserIcon, Clock, School, NotebookPen } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -55,6 +55,7 @@ const Navbar: React.FC = () => {
                 <NavLink to="/student/notes" icon={<BookOpen size={18} />} label="Library" active={isActive('/student/notes')} />
                 <NavLink to="/student/quizzes" icon={<School size={18} />} label="Practice" active={isActive('/student/quizzes')} />
                 <NavLink to="/student/ai" icon={<MessageSquare size={18} />} label="AI Tutor" active={isActive('/student/ai')} />
+                <NavLink to="/student/personal-notes" icon={<NotebookPen size={18} />} label="My Notes" active={isActive('/student/personal-notes')} />
                 <NavLink to="/student/history" icon={<Clock size={18} />} label="History" active={isActive('/student/history')} />
               </>
             )}
