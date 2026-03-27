@@ -15,6 +15,8 @@ import LoginScreen from '../screens/LoginScreen';
 import StudentHistoryScreen from '../screens/student/StudentHistoryScreen';
 import StudentAIScreen from '../screens/student/StudentAIScreen';
 import StudentNotesScreen from '../screens/student/StudentNotesScreen';
+import QuizListScreen from '../screens/QuizListScreen';
+import QuizDetailScreen from '../screens/QuizDetailScreen';
 
 // Teacher Screens
 import TeacherDashboard from '../screens/teacher/TeacherDashboard';
@@ -22,6 +24,7 @@ import UploadNoteScreen from '../screens/teacher/UploadNoteScreen';
 import TeacherLibraryScreen from '../screens/teacher/TeacherLibraryScreen';
 import TeacherPersonalNotes from '../screens/teacher/TeacherPersonalNotes';
 import TeacherAIScreen from '../screens/teacher/TeacherAIScreen';
+import LoadingScreen from '../screens/LoadingScreen';
 
 // Admin Screens
 import AdminDashboard from '../screens/admin/AdminDashboard';
@@ -62,6 +65,7 @@ function MainTabs() {
           if (route.name === 'History') iconName = focused ? 'time' : 'time-outline';
           else if (route.name === 'AI') iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
           else if (route.name === 'Notes') iconName = focused ? 'document-text' : 'document-text-outline';
+          else if (route.name === 'Practice') iconName = focused ? 'school' : 'school-outline';
           else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -70,6 +74,7 @@ function MainTabs() {
       <Tab.Screen name="History" component={StudentHistoryScreen} />
       <Tab.Screen name="AI" component={StudentAIScreen} />
       <Tab.Screen name="Notes" component={StudentNotesScreen} />
+      <Tab.Screen name="Practice" component={QuizListScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
@@ -132,7 +137,7 @@ function RoleNavigator() {
     fetchRole();
   }, []);
 
-  if (loading) return null; // Or a loading spinner
+  if (loading) return <LoadingScreen />;
 
   if (role === 'admin') return <AdminTabs />;
   if (role === 'teacher') return <TeacherTabs />;
@@ -148,6 +153,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Library" component={TeacherLibraryScreen} />
       <Stack.Screen name="AddUser" component={AddUserScreen} options={{ animation: 'slide_from_bottom' }} />
       <Stack.Screen name="NoteDetail" component={NoteDetailScreen} />
+      <Stack.Screen name="QuizDetail" component={QuizDetailScreen} />
     </Stack.Navigator>
   );
 }

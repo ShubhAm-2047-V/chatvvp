@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #a3a6ff;
+  --color-brand-secondary: #69f6b8;
+  --color-brand-surface: #060e20;
+  --color-brand-container: #0f1930;
+  --color-brand-accent: #6366f1;
+}
+
+:root {
+  /* Nocturnal Slate & Indigo Palette */
+  --surface: #060e20;
+  --surface-container-low: #091328;
+  --surface-container: #0f1930;
+  --surface-container-high: #141f38;
+  --surface-container-highest: #192540;
+  --surface-bright: #1f2b49;
+  
+  --primary: #a3a6ff;
+  --primary-dim: #6063ee;
+  --on-primary: #0f00a4;
+  
+  --secondary: #69f6b8;
+  --on-secondary: #00452d;
+  
+  --on-surface: #dee5ff;
+  --on-surface-variant: #a3aac4;
+  --outline-variant: rgba(109, 117, 140, 0.15);
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--surface)] text-[var(--on-surface)] antialiased;
+    font-family: 'Manrope', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--surface-bright), transparent 40%);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid var(--outline-variant);
+  }
+
+  .bento-card {
+    @apply bg-[var(--surface-container)] rounded-2xl p-6 transition-all duration-300 hover:bg-[var(--surface-container-high)];
+  }
+
+  .btn-primary {
+    @apply px-6 py-2.5 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]
+           bg-gradient-to-br from-[var(--primary-dim)] to-[var(--primary)] text-[var(--on-primary)] shadow-lg shadow-indigo-500/20
+           flex items-center justify-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 rounded-2xl font-semibold transition-all duration-300
+           backdrop-blur-sm border border-[var(--outline-variant)] text-[var(--on-surface)]
+           flex items-center justify-center gap-2;
+    background-color: color-mix(in srgb, var(--surface-bright), transparent 80%);
+  }
+  .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--surface-bright), transparent 70%);
+  }
+
+  .input-premium {
+    @apply bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-xl py-3 px-4 text-sm transition-all duration-300
+           focus:outline-none focus:ring-2 focus:ring-[var(--primary-dim)] focus:bg-[var(--surface-container-highest)] focus:border-transparent;
+  }
+
+  .chip {
+    @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+
+  .chip-success {
+    background-color: color-mix(in srgb, var(--secondary), transparent 90%);
+    color: var(--secondary);
+    border: 1px solid color-mix(in srgb, var(--secondary), transparent 80%);
+  }
+}
+
+/* Custom Utilities for Design Strategy */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.indigo-glow {
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+}
+
+/* Fallbacks to maintain backward compatibility during migration */
+/* Redundant aliases removed to avoid PostCSS @apply errors */
+
+.btn-danger { 
+  @apply px-6 py-2.5 rounded-2xl;
+  background-color: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}

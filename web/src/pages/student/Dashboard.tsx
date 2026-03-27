@@ -33,7 +33,7 @@ const StudentDashboard: React.FC = () => {
       
       {/* Hero Greeting */}
       <div className="mb-12">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight text-glow">
           Good morning, <span className="text-indigo-400">{userName || 'Alex'}</span>.
         </h1>
         <p className="mt-4 text-lg text-[var(--on-surface-variant)] max-w-2xl">
@@ -47,7 +47,7 @@ const StudentDashboard: React.FC = () => {
         <div className="lg:col-span-2 space-y-8">
           
           {/* AI Tutor Bento Card */}
-          <div className="bento-card border border-indigo-500/20 relative overflow-hidden group p-8 min-h-[300px] flex flex-col justify-between indigo-glow">
+          <div className="bento-card card-3d-hover holographic-border glitch-hover border border-indigo-500/20 relative overflow-hidden group p-8 min-h-[300px] flex flex-col justify-between indigo-glow shadow-2xl">
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none"></div>
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -148,7 +148,7 @@ const StudentDashboard: React.FC = () => {
 };
 
 const StatsCard = ({ icon, label, value, subtitle }: { icon: any, label: string, value: any, subtitle: string }) => (
-  <div className="bento-card border border-white/5 p-8 flex flex-col justify-between">
+  <div className="bento-card card-3d-hover holographic-border glitch-hover border border-white/5 p-8 flex flex-col justify-between shadow-xl">
     <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6">
       {icon}
     </div>

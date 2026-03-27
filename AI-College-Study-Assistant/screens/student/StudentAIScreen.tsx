@@ -245,7 +245,15 @@ const styles = StyleSheet.create({
   text: { fontSize: 14, lineHeight: 22 },
   userText: { color: '#FFF', fontWeight: '500' },
   aiText: { color: THEME_COLORS.secondary, fontWeight: '500' },
-  inputArea: { flexDirection: 'row', padding: 12, alignItems: 'center', borderTopWidth: 2, borderColor: THEME_COLORS.primary, ...PIXEL_SHADOWS.card },
+  inputArea: { 
+    flexDirection: 'row', 
+    padding: 12, 
+    paddingBottom: 80, // Account for absolute tab bar (65) + margin
+    alignItems: 'center', 
+    borderTopWidth: 2, 
+    borderColor: THEME_COLORS.primary, 
+    ...PIXEL_SHADOWS.card 
+  },
   input: { flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)', borderRadius: 10, paddingHorizontal: 16, paddingVertical: 10, maxHeight: 100, fontSize: 15, borderWidth: 1, borderColor: THEME_COLORS.border, color: THEME_COLORS.secondary },
   sendBtn: { width: 44, height: 44, borderRadius: 10, backgroundColor: THEME_COLORS.secondary, justifyContent: 'center', alignItems: 'center', marginLeft: 12, ...PIXEL_SHADOWS.button },
   

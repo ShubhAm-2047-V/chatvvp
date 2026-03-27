@@ -10,7 +10,9 @@ import {
   ScrollView,
   Linking,
   Animated,
+  Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -39,21 +41,17 @@ export default function StudentNotesScreen() {
   const [query, setQuery] = useState('');
   const [branch, setBranch] = useState('');
   const [year, setYear] = useState('');
-  const [subject, setSubject] = useState('');
-  
+  const [allNotes, setAllNotes] = useState<SearchResult[]>([]);
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   const headerAnim = useRef(new Animated.Value(0)).current;
   const headerSlide = useRef(new Animated.Value(-20)).current;
   const searchBoxAnim = useRef(new Animated.Value(0)).current;
 
-  const branches = ['Computer Science', 'Electrical', 'Mechanical', 'Civil', 'Information Technology'];
-  const years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
-  const subjects = ['Data Structures', 'Algorithms', 'Linear Algebra', 'Physics', 'Database Management'];
-
   useEffect(() => {
+    loadProfileAndNotes();
+    
     Animated.sequence([
       Animated.parallel([
         Animated.timing(headerAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
@@ -61,28 +59,52 @@ export default function StudentNotesScreen() {
       ]),
       Animated.timing(searchBoxAnim, { toValue: 1, duration: 400, useNativeDriver: true }),
     ]).start();
-  }, [headerAnim, headerSlide, searchBoxAnim]);
+  }, []);
 
-  const handleSearch = async () => {
-    Keyboard.dismiss();
+  const loadProfileAndNotes = async () => {
     setLoading(true);
-    setHasSearched(true);
     try {
-      const response = await api.get('/student/search', {
-        params: { topic: query, branch, year, subject }
-      });
-      setResults(response.data.data || response.data || []);
-      
-      await api.post('/student/activity/view-note', {
-        topic: query || 'General Search',
-        subject: subject || 'All'
-      });
-    } catch (error) {
-      console.log('Search API Error:', error);
+      const savedBranch = await AsyncStorage.getItem('branch');
+      const savedYear = await AsyncStorage.getItem('year');
+      if (savedBranch) setBranch(savedBranch);
+      if (savedYear) setYear(savedYear);
+
+      const response = await api.get('/student/notes');
+      const notes = response.data || [];
+      setAllNotes(notes);
+      setResults(notes);
+    } catch (error: any) {
+      console.log('Error loading notes:', error);
+      const msg = error.response?.data?.message || 'Failed to load notes. Please check your connection.';
+      Alert.alert('Problem Loading Notes', msg);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSearch = () => {
+    Keyboard.dismiss();
+    const term = query.toLowerCase();
+    const filtered = allNotes.filter(n => 
+      !term || 
+      n.topic?.toLowerCase().includes(term) || 
+      n.subject?.toLowerCase().includes(term) ||
+      n.formattedText?.toLowerCase().includes(term)
+    );
+    setResults(filtered);
+  };
+
+  // Auto-search as user types for better experience
+  useEffect(() => {
+    const term = query.toLowerCase();
+    const filtered = allNotes.filter(n => 
+      !term || 
+      n.topic?.toLowerCase().includes(term) || 
+      n.subject?.toLowerCase().includes(term) ||
+      n.formattedText?.toLowerCase().includes(term)
+    );
+    setResults(filtered);
+  }, [query, allNotes]);
 
   const watchVideo = async (item: SearchResult) => {
     if (item.youtubeUrl) {
@@ -113,7 +135,7 @@ export default function StudentNotesScreen() {
         <Text style={styles.cardTopic} numberOfLines={1}>{item.topic}</Text>
         <Text style={styles.cardSubject}>{item.subject}</Text>
       </View>
-      <Text style={styles.cardPreview} numberOfLines={2}>{item.preview || item.formattedText}</Text>
+      <Text style={styles.cardPreview} numberOfLines={2}>{item.formattedText || item.topic + " material"}</Text>
       
       <View style={styles.actionRow}>
         <TouchableOpacity style={[styles.actionBtn, styles.noteBtn]} onPress={() => navToDetail(item)}>
@@ -141,32 +163,32 @@ export default function StudentNotesScreen() {
     <BackgroundWrapper noSafeArea>
       <Animated.View style={[styles.headerWrapper, { opacity: headerAnim, transform: [{ translateY: headerSlide }] }]}>
         <View style={styles.headerArea}>
-            <Text style={styles.header}>Study Materials</Text>
-            <Text style={styles.subheader}>Explore notes, videos, and AI help</Text>
+            <Text style={styles.header}>Study Library</Text>
+            <Text style={styles.subheader}>Curated for your academic success</Text>
         </View>
       </Animated.View>
       
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
           <Animated.View style={[styles.searchBox, { opacity: searchBoxAnim }]}>
+              <View style={styles.profileBadge}>
+                <View style={styles.badgeItem}>
+                  <Text style={styles.badgeLabel}>Year</Text>
+                  <Text style={styles.badgeValue}>{year || 'N/A'}</Text>
+                </View>
+                <View style={[styles.badgeItem, { borderLeftWidth: 1, borderColor: '#eee' }]}>
+                  <Text style={styles.badgeLabel}>Branch</Text>
+                  <Text style={styles.badgeValue}>{branch || 'General'}</Text>
+                </View>
+              </View>
+
               <Input
-                  placeholder="Search topics (e.g. Binary Search)"
+                  placeholder="Search topics or subjects..."
                   value={query}
                   onChangeText={setQuery}
                   icon={<Ionicons name="search" size={20} color={THEME_COLORS.primary} />}
                   onSubmitEditing={handleSearch}
                   style={styles.inputStyle}
               />
-
-              <View style={styles.filtersRow}>
-                  <View style={styles.filterHalf}>
-                      <Dropdown label="Branch" value={branch} options={branches} onChange={setBranch} />
-                  </View>
-                  <View style={styles.filterHalf}>
-                      <Dropdown label="Year" value={year} options={years} onChange={setYear} />
-                  </View>
-              </View>
-
-              <Button title="Find Resources" type="primary" onPress={handleSearch} style={styles.searchButton} />
           </Animated.View>
 
           <View style={styles.resultsContainer}>
@@ -181,15 +203,11 @@ export default function StudentNotesScreen() {
                   </View>
               ))}
               </>
-          ) : hasSearched ? (
+          ) : (
               <View style={styles.emptyState}>
                 <Ionicons name="document-text-outline" size={64} color={THEME_COLORS.border} />
-                <Text style={styles.emptyText}>No matches found</Text>
-              </View>
-          ) : (
-              <View style={styles.guide}>
-                  <Ionicons name="school-outline" size={48} color={THEME_COLORS.border} />
-                  <Text style={styles.guideText}>Select your branch and year to see relevant materials</Text>
+                <Text style={styles.emptyText}>{query ? 'No matches found' : 'No materials available yet'}</Text>
+                {!query && <Text style={styles.emptySub}>Check back later for new content from your teachers.</Text>}
               </View>
           )}
           </View>
@@ -210,6 +228,32 @@ const styles = StyleSheet.create({
   header: { fontSize: 22, fontWeight: 'bold', color: THEME_COLORS.secondary },
   subheader: { fontSize: 13, color: THEME_COLORS.textLight, marginTop: 4, fontWeight: '500' },
   searchBox: { padding: 16, backgroundColor: 'rgba(255, 255, 255, 0.5)', borderBottomWidth: 1, borderColor: THEME_COLORS.border },
+  profileBadge: { 
+    flexDirection: 'row', 
+    backgroundColor: '#fff', 
+    borderRadius: 12, 
+    marginBottom: 12, 
+    borderWidth: 1, 
+    borderColor: '#eee',
+    overflow: 'hidden'
+  },
+  badgeItem: { 
+    flex: 1, 
+    padding: 10, 
+    alignItems: 'center' 
+  },
+  badgeLabel: { 
+    fontSize: 9, 
+    color: THEME_COLORS.textLight, 
+    fontWeight: '800', 
+    textTransform: 'uppercase' 
+  },
+  badgeValue: { 
+    fontSize: 13, 
+    fontWeight: 'bold', 
+    color: THEME_COLORS.primary,
+    marginTop: 2
+  },
   inputStyle: { backgroundColor: 'rgba(255, 255, 255, 0.8)' },
   filtersRow: { flexDirection: 'row', gap: 10 },
   filterHalf: { flex: 1 },
@@ -228,8 +272,9 @@ const styles = StyleSheet.create({
   videoBtn: { backgroundColor: '#f43f5e' },
   aiBtn: { backgroundColor: THEME_COLORS.secondary },
   actionBtnText: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
-  emptyState: { alignItems: 'center', marginTop: 60 },
-  emptyText: { fontSize: 16, fontWeight: 'bold', color: THEME_COLORS.textLight, marginTop: 16 },
+  emptyState: { alignItems: 'center', marginTop: 60, paddingHorizontal: 20 },
+  emptyText: { fontSize: 16, fontWeight: 'bold', color: THEME_COLORS.secondary, marginTop: 16, textAlign: 'center' },
+  emptySub: { fontSize: 13, color: THEME_COLORS.textLight, marginTop: 8, textAlign: 'center', lineHeight: 20 },
   guide: { alignItems: 'center', marginTop: 80, paddingHorizontal: 40 },
   guideText: { textAlign: 'center', color: THEME_COLORS.textLight, marginTop: 16, lineHeight: 22, fontWeight: '500' }
 });

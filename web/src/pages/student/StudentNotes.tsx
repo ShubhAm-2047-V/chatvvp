@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { Search, BookOpen, Clock, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, BookOpen, Clock, ChevronRight, Youtube } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const StudentNotes: React.FC = () => {
+  const navigate = useNavigate();
   const [notes, setNotes] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSubject, setFilterSubject] = useState('');
@@ -35,50 +38,73 @@ const StudentNotes: React.FC = () => {
     }
   };
 
-  const handleNoteClick = async (noteId: string, fileUrl: string) => {
-    try {
-      await api.post(`/student/notes/${noteId}/view`);
-      window.open(fileUrl, '_blank');
-    } catch (error) {
-      console.error('Failed to record view:', error);
-      window.open(fileUrl, '_blank');
-    }
+  const handleNoteClick = (noteId: string) => {
+    navigate(`/student/notes/${noteId}`);
   };
 
   const filteredNotes = notes.filter(n => {
-    const matchesSearch = n.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          n.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const term = searchTerm.toLowerCase();
+    const matchesSearch = !term || 
+                          n.topic?.toLowerCase().includes(term) || 
+                          n.subject?.toLowerCase().includes(term) ||
+                          n.cleanedText?.toLowerCase().includes(term);
     const matchesSubject = filterSubject ? n.subject?.toLowerCase() === filterSubject.toLowerCase() : true;
     const matchesYear = filterYear ? n.year === Number(filterYear) : true;
     return matchesSearch && matchesSubject && matchesYear;
   });
 
+  const handleSearchTrigger = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 300); // Simulate search feel
+  };
+
+
   return (
     <div className="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
       
-      <div className="mb-12">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-12"
+      >
         <h1 className="text-4xl font-extrabold text-white tracking-tight">Library</h1>
-        <p className="mt-4 text-lg text-[var(--on-surface-variant)]">Access curated lecture materials and academic insights.</p>
-      </div>
+        <p className="mt-4 text-lg text-[var(--on-surface-variant)] italic">Access curated lecture materials and academic insights.</p>
+      </motion.div>
 
       <div className="flex flex-col lg:flex-row gap-12">
         
         {/* Filter Sidebar */}
-        <div className="w-full lg:w-72 flex-shrink-0 space-y-8">
-          <div className="bento-card border border-white/5 space-y-6">
+        <motion.div 
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="w-full lg:w-72 flex-shrink-0 space-y-8"
+        >
+          <div className="bento-card border border-white/5 space-y-6 sticky top-24">
             <div>
               <label className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3 block">Search</label>
-              <div className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
-                <input
-                  type="text"
-                  placeholder="Keywords..."
-                  className="input-premium w-full pl-10 py-2 border-white/5"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+              <div className="flex flex-col gap-3">
+                <div className="relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Search topics or content..."
+                    className="input-premium w-full pl-10 py-2 border-white/5"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
+                  />
+                </div>
+                <button 
+                  onClick={handleSearchTrigger}
+                  className="btn-primary py-2 text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/10"
+                >
+                  <Search size={14} />
+                  Search Now
+                </button>
               </div>
             </div>
+
 
             <div>
               <label className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3 block">Subject</label>
@@ -93,14 +119,18 @@ const StudentNotes: React.FC = () => {
             </div>
 
             {userProfile?.role === 'student' ? (
-              <div className="p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/10">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/10"
+              >
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Fixed Profile</label>
                 <div className="flex items-center gap-2">
                    <span className="bg-indigo-500/20 text-indigo-400 text-[10px] font-bold px-2 py-1 rounded">Year {userProfile.year}</span>
                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded">{userProfile.branch}</span>
                 </div>
                 <p className="text-[10px] text-slate-500 mt-2 italic">Curated for your academic path.</p>
-              </div>
+              </motion.div>
             ) : (
               <div>
                 <label className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3 block">Year</label>
@@ -116,7 +146,7 @@ const StudentNotes: React.FC = () => {
             )}
 
           </div>
-        </div>
+        </motion.div>
 
         {/* Notes Grid */}
         <div className="flex-1">
@@ -125,44 +155,79 @@ const StudentNotes: React.FC = () => {
                {[1,2,4].map(i => <div key={i} className="h-64 bento-card animate-pulse bg-white/5"></div>)}
             </div>
           ) : filteredNotes.length === 0 ? (
-            <div className="text-center bento-card py-20 border-dashed border-white/10">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center bento-card py-20 border-dashed border-white/10"
+            >
               <BookOpen size={64} className="mx-auto text-white/10 mb-6" />
               <h3 className="text-xl font-bold text-white">No materials found</h3>
               <p className="mt-2 text-[var(--on-surface-variant)]">Try adjusting your filters or search terms.</p>
-            </div>
+            </motion.div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredNotes.map((note) => (
-                <div key={note._id} className="bento-card border border-white/5 flex flex-col justify-between group">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="chip chip-success">{note.topic}</span>
-                      <div className="text-[var(--on-surface-variant)] flex items-center gap-1.5 text-xs">
-                        <Clock size={12} />
-                        {new Date(note.createdAt).toLocaleDateString()}
+            <motion.div 
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: { transition: { staggerChildren: 0.1 } }
+              }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              <AnimatePresence>
+                {filteredNotes.map((note) => (
+                  <motion.div 
+                    layout
+                    key={note._id} 
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.9, y: 20 },
+                      visible: { opacity: 1, scale: 1, y: 0 }
+                    }}
+                    whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                    className="bento-card border border-white/5 flex flex-col justify-between group overflow-hidden"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="chip chip-success !bg-indigo-500/10 !text-indigo-400">{note.subject}</span>
+                        <div className="text-[var(--on-surface-variant)] flex items-center gap-1.5 text-xs">
+                          <Clock size={12} />
+                          {new Date(note.createdAt).toLocaleDateString()}
+                        </div>
                       </div>
+                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{note.topic}</h3>
+                      <p className="text-sm text-[var(--on-surface-variant)] line-clamp-3 leading-relaxed font-medium">
+                        {note.cleanedText || note.formattedText || "Detailed study material available for reviewed content."}
+                      </p>
+
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">{note.title}</h3>
-                    <p className="text-sm text-[var(--on-surface-variant)] line-clamp-3 leading-relaxed">{note.description}</p>
-                  </div>
-                  <div className="mt-8 flex items-center justify-between pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                        <span className="text-[10px] font-bold">PDF</span>
+                    <div className="mt-8 flex items-center justify-between pt-6 border-t border-white/5">
+                      <div className="flex items-center gap-2">
+                        <motion.div 
+                          animate={{ rotate: [0, 5, -5, 0] }}
+                          transition={{ repeat: Infinity, duration: 4 }}
+                          className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400"
+                        >
+                          <span className="text-[10px] font-bold">PDF</span>
+                        </motion.div>
+                        <span className="text-xs font-medium text-slate-500 italic">Curated Review</span>
+                        {note.youtubeUrl && (
+                          <div className="ml-3 flex items-center gap-1.5 text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/10">
+                             <Youtube size={10} />
+                             <span className="text-[9px] font-bold uppercase tracking-widest">Video</span>
+                          </div>
+                        )}
                       </div>
-                      <span className="text-xs font-medium text-slate-500">2.4 MB</span>
+                      <button 
+                        onClick={() => handleNoteClick(note._id)}
+                        className="text-indigo-400 hover:text-indigo-300 font-bold text-sm flex items-center gap-1 group/btn"
+                      >
+                        Read Now
+                        <ChevronRight size={16} className="transition-transform group-hover/btn:translate-x-1" />
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => handleNoteClick(note._id, note.fileUrl)}
-                      className="text-indigo-400 hover:text-indigo-300 font-bold text-sm flex items-center gap-1 group/btn"
-                    >
-                      Read Now
-                      <ChevronRight size={16} className="transition-transform group-hover/btn:translate-x-1" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           )}
         </div>
 

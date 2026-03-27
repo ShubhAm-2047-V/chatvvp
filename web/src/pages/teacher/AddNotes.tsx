@@ -8,6 +8,8 @@ const AddNotes: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewNote, setPreviewNote] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     subject: '',
@@ -39,11 +41,13 @@ const AddNotes: React.FC = () => {
     }
 
     try {
-      await api.post('/teacher/upload-note', data, {
+      const res = await api.post('/teacher/upload-note', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSuccess(true);
-      setTimeout(() => navigate('/teacher'), 2000);
+      setPreviewNote(res.data.note);
+      setShowPreview(true);
+      // Redirection removed to allow preview
     } catch (err: any) {
       console.error('Upload Error:', err);
       setError(err.response?.data?.message || 'Failed to process upload. Please check your credentials.');
@@ -52,7 +56,93 @@ const AddNotes: React.FC = () => {
     }
   };
 
+  if (showPreview && previewNote) {
+    return (
+      <div className="max-w-5xl mx-auto py-24 px-4 sm:px-6 lg:px-8 animate-fade-in">
+        <div className="mb-12">
+          <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2">Extraction Preview</h1>
+          <p className="text-[var(--on-surface-variant)]">Review the AI-formatted results before finalizing.</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Metadata Sidebar */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bento-card border border-white/5 p-6">
+              <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-6">Material Profile</h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Subject</p>
+                  <p className="text-white font-bold">{previewNote.subject}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Topic</p>
+                  <p className="text-white font-bold">{previewNote.topic}</p>
+                </div>
+                <div className="flex gap-8">
+                  <div>
+                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Branch</p>
+                    <p className="text-white font-bold">{previewNote.branch}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Year</p>
+                    <p className="text-white font-bold">Year {previewNote.year}</p>
+                  </div>
+                </div>
+                {previewNote.youtubeUrl && (
+                  <div className="pt-4 border-t border-white/5">
+                    <div className="flex items-center gap-2 text-red-400 mb-2">
+                      <Youtube size={16} />
+                      <span className="text-[10px] font-bold uppercase">Video Link Integrated</span>
+                    </div>
+                    <p className="text-xs text-slate-400 truncate">{previewNote.youtubeUrl}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <button 
+              onClick={() => navigate('/teacher')}
+              className="btn-primary w-full py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-indigo-500/20"
+            >
+              <CheckCircle2 size={20} />
+              Finalize & Close
+            </button>
+          </div>
+
+          {/* Content Main View */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bento-card border border-white/5 p-8 min-h-[600px] relative overflow-hidden bg-[var(--surface-container-low)]">
+             <div className="absolute top-0 right-0 p-4 opacity-10">
+                <FileText size={120} />
+             </div>
+             
+             <div className="relative z-10">
+                <h2 className="text-2xl font-bold text-white mb-8 border-b border-white/5 pb-4">Extracted Content</h2>
+                <div className="prose prose-invert max-w-none">
+                  {previewNote.formattedText ? (
+                    <div className="whitespace-pre-wrap text-slate-300 leading-relaxed font-medium">
+                      {previewNote.formattedText}
+                    </div>
+                  ) : (
+                    <div className="text-slate-500 italic">No formatted text available. Raw content below:</div>
+                  )}
+                  {!previewNote.formattedText && previewNote.cleanedText && (
+                    <div className="mt-4 whitespace-pre-wrap text-slate-400">
+                      {previewNote.cleanedText}
+                    </div>
+                  )}
+                </div>
+             </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
+
     <div className="max-w-4xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
       
       <div className="mb-12 flex items-center justify-between">

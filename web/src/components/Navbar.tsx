@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Layout, BookOpen, MessageSquare, ShieldCheck, User as UserIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { LogOut, Layout, BookOpen, MessageSquare, ShieldCheck, User as UserIcon, Clock, School } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -33,13 +34,18 @@ const Navbar: React.FC = () => {
           <span className="text-sm font-medium hidden lg:block">Back</span>
         </button>
         <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center p-1.5 transition-transform group-hover:rotate-12">
-              <BookOpen className="text-white w-full h-full" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 transition-transform group-hover:scale-110">
+              <img src="/logo.png" alt="Chat.VVP Logo" className="w-full h-full object-contain rounded-lg shadow-lg" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white hidden sm:block">
-              Chat<span className="text-indigo-400">VVP</span>
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold tracking-tight text-white leading-none">
+                CHAT.<span className="text-indigo-400">VVP</span>
+              </span>
+              <span className="text-[8px] text-slate-400 font-medium tracking-tighter uppercase">
+                College Study Assistant
+              </span>
+            </div>
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
@@ -47,7 +53,9 @@ const Navbar: React.FC = () => {
               <>
                 <NavLink to="/student" icon={<Layout size={18} />} label="Dashboard" active={isActive('/student')} />
                 <NavLink to="/student/notes" icon={<BookOpen size={18} />} label="Library" active={isActive('/student/notes')} />
+                <NavLink to="/student/quizzes" icon={<School size={18} />} label="Practice" active={isActive('/student/quizzes')} />
                 <NavLink to="/student/ai" icon={<MessageSquare size={18} />} label="AI Tutor" active={isActive('/student/ai')} />
+                <NavLink to="/student/history" icon={<Clock size={18} />} label="History" active={isActive('/student/history')} />
               </>
             )}
             {role === 'teacher' && (
@@ -89,17 +97,22 @@ const Navbar: React.FC = () => {
 };
 
 const NavLink = ({ to, icon, label, active }: { to: string, icon: React.ReactNode, label: string, active: boolean }) => (
-  <Link
-    to={to}
-    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-      active 
-        ? 'bg-indigo-500/20 text-indigo-300 font-bold' 
-        : 'text-slate-400 hover:text-white hover:bg-white/5'
-    }`}
+  <motion.div
+    whileHover={{ scale: 1.1, x: 5 }}
+    transition={{ type: "spring", stiffness: 400, damping: 10 }}
   >
-    {icon}
-    <span className="text-sm">{label}</span>
-  </Link>
+    <Link
+      to={to}
+      className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+        active 
+          ? 'bg-indigo-500/20 text-indigo-300 font-bold text-glow' 
+          : 'text-slate-400 hover:text-white hover:bg-white/5'
+      }`}
+    >
+      {icon}
+      <span className="text-sm">{label}</span>
+    </Link>
+  </motion.div>
 );
 
 export default Navbar;

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const User = require('./models/User');
+const User = require('../models/User');
 require('dotenv').config();
 
 const checkTeachers = async () => {
@@ -8,7 +8,7 @@ const checkTeachers = async () => {
         const teachers = await User.find({ role: 'teacher' });
         console.log('--- Teachers in Database ---');
         teachers.forEach(t => {
-            console.log(`Name: ${t.name}, Email: ${t.email}, CreatedBy: ${t.createdBy}, CreatedAt: ${t.createdAt}`);
+            console.log(`Name: ${t.name}, Email: ${t.email}, ID: ${t._id}`);
         });
 
         const admins = await User.find({ role: 'admin' });

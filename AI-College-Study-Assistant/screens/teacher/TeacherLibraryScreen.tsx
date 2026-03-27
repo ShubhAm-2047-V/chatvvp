@@ -34,7 +34,7 @@ export default function TeacherLibraryScreen({ navigation }: any) {
   const fetchNotes = async () => {
     try {
       const response = await api.get('/teacher/my-notes');
-      const allNotes = response.data.notes || [];
+      const allNotes = response.data || [];
       setNotes(allNotes.filter((n: any) => n.imageUrl));
     } catch (error) {
       console.error('Error fetching teacher notes:', error);

@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
@@ -62,8 +64,6 @@ const bootstrapAdmin = async () => {
     console.error('Error bootstrapping admin:', err.message);
   }
 };
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const axios = require('axios');
@@ -499,11 +499,35 @@ app.post('/api/teacher/upload-note', verifyToken, verifyRole(['teacher']), uploa
   }
 });
 
+// 4.5 Teacher Dashboard Stats
+app.get('/api/teacher/stats', verifyToken, verifyRole(['teacher']), async (req, res) => {
+  try {
+    const totalNotes = await Note.countDocuments({ teacherId: req.user._id });
+    
+    // Get all note IDs for this teacher to count views from Activity collection
+    const notes = await Note.find({ teacherId: req.user._id }, '_id');
+    const noteIds = notes.map(n => n._id);
+    
+    const totalViews = await Activity.countDocuments({ 
+      type: 'view_note', 
+      refId: { $in: noteIds } 
+    });
+
+    res.json({
+      totalNotes,
+      totalViews
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // 4. Teacher My Notes
 app.get('/api/teacher/my-notes', verifyToken, verifyRole(['teacher']), async (req, res) => {
   try {
     const notes = await Note.find({ teacherId: req.user._id }).sort({ createdAt: -1 });
-    res.json({ notes });
+    res.json(notes);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -541,7 +565,16 @@ app.get('/api/student/search', verifyToken, verifyRole(['student', 'admin']), as
 
     if (!subject) return res.status(400).json({ message: 'Subject required' });
 
-    let dbQuery = { branch, year: Number(year), subject };
+    let dbQuery = { 
+      $or: [
+        { 
+          branch: { $regex: new RegExp(`^${branch}$`, 'i') }, 
+          year: Number(year), 
+          subject: { $regex: new RegExp(`^${subject}$`, 'i') } 
+        },
+        { branch: { $regex: /^(All|General)$/i }, subject: { $regex: new RegExp(`^${subject}$`, 'i') } }
+      ]
+    };
     if (req.user.role !== 'student') dbQuery = { subject };
 
     let projection = {};
@@ -620,13 +653,26 @@ app.get('/api/student/notes', verifyToken, verifyRole(['student', 'admin']), asy
         return res.status(400).json({ message: 'User profile missing academic metadata' });
       }
       query = { 
-        branch: branch, 
-        year: Number(year) 
+        $or: [
+          { branch: { $regex: new RegExp(`^${branch}$`, 'i') }, year: Number(year) },
+          { branch: { $regex: /^(All|General)$/i } }
+        ]
       };
     }
     
     const notes = await Note.find(query).sort({ createdAt: -1 });
     res.json(notes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Fetch single note for detail view
+app.get('/api/student/notes/:id', verifyToken, verifyRole(['student', 'teacher', 'admin']), async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) return res.status(404).json({ message: 'Note not found' });
+    res.json(note);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -715,6 +761,12 @@ app.delete('/api/teacher/personal-notes/:id', verifyToken, verifyRole(['teacher'
     res.status(500).json({ error: err.message });
   }
 });
+
+// 10. Teacher Personal Notes
+// ... (omitted similar lines)
+
+const quizRoutes = require('./routes/quizRoutes');
+app.use('/api/quizzes', quizRoutes);
 
 // Error handling for 404
 app.use((req, res) => {

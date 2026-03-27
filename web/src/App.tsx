@@ -3,7 +3,11 @@ import BackgroundWrapper from './components/BackgroundWrapper';
 import Login from './pages/Login';
 import StudentDashboard from './pages/student/Dashboard';
 import StudentNotes from './pages/student/StudentNotes';
+import NoteDetail from './pages/student/NoteDetail';
+import StudentHistory from './pages/student/History';
 import StudentAI from './pages/student/StudentAI';
+import QuizList from './pages/student/QuizList';
+import QuizDetail from './pages/student/QuizDetail';
 import TeacherDashboard from './pages/teacher/Dashboard';
 import TeacherAddNotes from './pages/teacher/AddNotes';
 import TeacherAI from './pages/teacher/TeacherAI';
@@ -52,10 +56,42 @@ function App() {
             } 
           />
           <Route 
+            path="/student/notes/:id" 
+            element={
+              <PrivateRoute allowedRole="student">
+                <NoteDetail />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
             path="/student/ai" 
             element={
               <PrivateRoute allowedRole="student">
                 <StudentAI />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/student/quizzes" 
+            element={
+              <PrivateRoute allowedRole="student">
+                <QuizList />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/student/quiz/:id" 
+            element={
+              <PrivateRoute allowedRole="student">
+                <QuizDetail />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/student/history" 
+            element={
+              <PrivateRoute allowedRole="student">
+                <StudentHistory />
               </PrivateRoute>
             } 
           />
@@ -114,15 +150,5 @@ function App() {
     </Router>
   );
 }
-
-const HomeRedirect = () => {
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
-
-  if (!token) return <Navigate to="/login" replace />;
-  if (role === 'admin') return <Navigate to="/admin" replace />;
-  if (role === 'teacher') return <Navigate to="/teacher" replace />;
-  return <Navigate to="/student" replace />;
-};
 
 export default App;

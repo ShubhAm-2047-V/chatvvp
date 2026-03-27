@@ -1,4 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import ParticleField from './3d/ParticleField';
+
+const MagneticCursor = () => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <div 
+      className="magnetic-cursor" 
+      style={{ left: mousePos.x, top: mousePos.y }}
+    />
+  );
+};
 
 interface BackgroundWrapperProps {
   children: React.ReactNode;
@@ -6,19 +27,28 @@ interface BackgroundWrapperProps {
 
 const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({ children }) => {
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[var(--surface)]">
-      {/* Cloud Blur Background */}
-      <div className="cloud-bg-container">
-        <div className="cloud-blob blob-1"></div>
-        <div className="cloud-blob blob-2"></div>
-        <div className="cloud-blob blob-3"></div>
-        <div className="cloud-blob blob-4"></div>
-        <div className="bg-overlay-noise"></div>
-      </div>
+    <div className="min-h-screen relative overflow-hidden bg-[#060e20]">
+      {/* 3D Particle Universe */}
+      <ParticleField />
       
-      <div className="relative z-10">
-        {children}
-      </div>
+      {/* Magnetic Cursor Glow */}
+      <MagneticCursor />
+      
+      {/* Scanline Overlay */}
+      <div className="absolute inset-0 z-1 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={window.location.pathname}
+          initial={{ opacity: 0, scale: 0.95, filter: 'blur(20px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 1.05, filter: 'blur(20px)' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10"
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

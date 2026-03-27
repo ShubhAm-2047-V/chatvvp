@@ -1,9 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// 1. Point to Ngrok for public/reliable access (Use this if Wi-Fi connection fails)
+// 1. Point to your computer's IP address (10.155.182.188) for direct local connection.
 const BASE_URL = 'http://10.155.182.188:3000/api'; 
-// Use your computer's IP address (10.155.182.188) for direct local connection.
 
 export const api = axios.create({
   baseURL: BASE_URL,

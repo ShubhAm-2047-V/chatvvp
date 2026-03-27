@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { Users, UserPlus, Trash2, ShieldCheck, Mail, LayoutGrid, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState({ totalUsers: 0, students: 0, teachers: 0 });
@@ -26,6 +27,21 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   const handleDelete = async (userId: string) => {
     if (window.confirm('revoke user access permanently?')) {
       try {
@@ -48,9 +64,14 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8"
+    >
       
-      <div className="mb-12 flex flex-col sm:flex-row justify-between items-center gap-6">
+      <motion.div variants={itemVariants} className="mb-12 flex flex-col sm:flex-row justify-between items-center gap-6">
         <div>
           <div className="flex items-center gap-3 text-red-400 mb-2">
             <ShieldCheck size={20} />
@@ -66,7 +87,7 @@ const AdminDashboard: React.FC = () => {
           <UserPlus size={20} />
           Provision Access
         </button>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         <StatsCard 
@@ -74,29 +95,32 @@ const AdminDashboard: React.FC = () => {
           label="Total Population" 
           value={stats.totalUsers} 
           subtitle="Registered personas" 
+          delay={0.2}
         />
         <StatsCard 
           icon={<LayoutGrid className="text-emerald-400" />} 
           label="Instructional Staff" 
           value={stats.teachers} 
           subtitle="Curators of knowledge" 
+          delay={0.3}
         />
          <StatsCard 
           icon={<Mail className="text-purple-400" />} 
           label="Active Students" 
           value={stats.students} 
           subtitle="Seekers of truth" 
+          delay={0.4}
         />
       </div>
 
-      <div className="bento-card border border-white/5 p-0">
+      <motion.div variants={itemVariants} className="bento-card border border-white/5 p-0 overflow-hidden">
         <div className="px-8 py-6 bg-[var(--surface-container-low)] border-b border-white/5 flex items-center justify-between">
           <h3 className="text-xl font-bold text-white tracking-tight">Identity Registry</h3>
           <span className="chip chip-success !bg-red-500/10 !text-red-400 !border-red-500/20 text-[10px]">Secure</span>
         </div>
         <div className="overflow-x-auto no-scrollbar">
           {loading ? (
-             <div className="p-20 text-center text-slate-500 italic">Accessing encrypted vault...</div>
+             <div className="p-20 text-center text-slate-500 italic animate-pulse">Accessing encrypted vault...</div>
           ) : (
             <table className="min-w-full">
               <thead>
@@ -108,17 +132,23 @@ const AdminDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {users.map((user) => (
-                  <tr key={user._id} className="hover:bg-white/5 transition-colors group">
+                {users.map((user, idx) => (
+                  <motion.tr 
+                    key={user._id} 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + idx * 0.05 }}
+                    className="hover:bg-white/5 transition-colors group"
+                  >
                     <td className="px-8 py-5 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 font-bold text-xs">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 font-bold text-xs group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-colors">
                           {user.name.charAt(0)}
                         </div>
-                        <span className="text-sm font-bold text-white">{user.name}</span>
+                        <span className="text-sm font-bold text-white uppercase tracking-tight">{user.name}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-5 whitespace-nowrap text-sm text-slate-400">{user.email}</td>
+                    <td className="px-8 py-5 whitespace-nowrap text-sm text-slate-400 font-mono">{user.email}</td>
                     <td className="px-8 py-5 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${user.role === 'admin' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : user.role === 'teacher' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'}`}>
@@ -149,21 +179,27 @@ const AdminDashboard: React.FC = () => {
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           )}
         </div>
-      </div>
+      </motion.div>
 
-    </div>
+    </motion.div>
   );
 };
 
-const StatsCard = ({ icon, label, value, subtitle }: { icon: any, label: string, value: any, subtitle: string }) => (
-  <div className="bento-card border border-white/5 p-8 flex flex-col justify-between group">
-    <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/5 group-hover:border-indigo-500/30 transition-colors">
+const StatsCard = ({ icon, label, value, subtitle, delay }: { icon: any, label: string, value: any, subtitle: string, delay: number }) => (
+  <motion.div 
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay, duration: 0.5, ease: "easeOut" }}
+    whileHover={{ y: -5, scale: 1.02 }}
+    className="bento-card border border-white/5 p-8 flex flex-col justify-between group cursor-default hover:bg-[var(--surface-container-highest)]"
+  >
+    <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/5 group-hover:border-indigo-500/30 group-hover:animate-pulse transition-colors">
       {icon}
     </div>
     <div>
@@ -176,7 +212,7 @@ const StatsCard = ({ icon, label, value, subtitle }: { icon: any, label: string,
         {subtitle}
       </p>
     </div>
-  </div>
+  </motion.div>
 );
 
 export default AdminDashboard;

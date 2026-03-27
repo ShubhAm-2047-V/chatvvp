@@ -1,6 +1,4 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { StyleSheet, View, Text, Image } from 'react-native';
 import { Fonts } from '@/constants/theme';
 
 interface LogoProps {
@@ -10,15 +8,21 @@ interface LogoProps {
 }
 
 /**
- * Reusable 'Study AI' Logo component matching the web dashboard.
+ * Reusable 'Chat.VVP' Logo component using the new branding.
  */
-export const Logo: React.FC<LogoProps> = ({ size = 28, textColor = '#333', style }) => {
+export const Logo: React.FC<LogoProps> = ({ size = 40, textColor = '#333', style }) => {
   return (
     <View style={[styles.container, style]}>
-      <IconSymbol name="brain.head.profile" size={size} color="#0a7ea4" />
-      <Text style={[styles.text, { fontSize: size * 0.8, color: textColor }]}>
-        Study AI
-      </Text>
+      <Image 
+        source={require('@/assets/images/logo.png')} 
+        style={{ width: size, height: size, borderRadius: 8 }}
+        resizeMode="contain"
+      />
+      <View>
+        <Text style={[styles.text, { fontSize: size * 0.5, color: '#0a7ea4' }]}>
+          CHAT. VVP
+        </Text>
+      </View>
     </View>
   );
 };

@@ -40,11 +40,17 @@ export default function TeacherDashboard() {
 
   const fetchStats = async () => {
     try {
-      const response = await api.get('/teacher/my-notes');
-      const notes = response.data.notes || [];
+      // 1. Get total notes count from my-notes
+      const notesRes = await api.get('/teacher/my-notes');
+      const notes = notesRes.data || [];
+      
+      // 2. Get real stats (views) from stats endpoint
+      const statsRes = await api.get('/teacher/stats');
+      const serverStats = statsRes.data;
+
       setStats({
         totalNotes: notes.length,
-        totalViews: notes.reduce((acc: number, n: any) => acc + (n.views || 0), 0),
+        totalViews: serverStats.totalViews || 0,
         totalInteractions: notes.length * 5,
       });
     } catch (error) {

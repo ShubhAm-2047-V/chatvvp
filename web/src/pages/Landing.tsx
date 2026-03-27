@@ -1,19 +1,21 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Sparkles, Shield, ArrowRight, Github } from 'lucide-react';
+import { Sparkles, Shield, ArrowRight, Github } from 'lucide-react';
 import HeroScene from '../components/3d/HeroScene';
 import { Link } from 'react-router-dom';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen text-[var(--on-surface)] overflow-hidden selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
+    <div className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)] overflow-hidden selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 glass px-6 py-4 flex justify-between items-center transition-all duration-300">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--primary-dim)] to-[var(--primary)] flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <BookOpen className="text-[var(--on-primary)] w-5 h-5" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 transition-transform hover:scale-110">
+            <img src="/logo.png" alt="Chat.VVP Logo" className="w-full h-full object-contain rounded-lg shadow-lg" />
           </div>
-          <span className="font-bold text-xl tracking-tighter">CHAT<span className="text-[var(--primary)]">VVP</span></span>
+          <div className="flex flex-col">
+            <span className="font-bold text-xl tracking-tighter leading-none">CHAT.<span className="text-[var(--primary)]">VVP</span></span>
+            <span className="text-[8px] text-[var(--on-surface-variant)] uppercase font-medium tracking-tighter">College Study Assistant</span>
+          </div>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--on-surface-variant)]">
           <a href="#features" className="hover:text-[var(--primary)] transition-colors">Features</a>
@@ -23,7 +25,7 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6">
+      <section className="relative pt-32 pb-20 px-6 stagger-reveal">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
@@ -35,7 +37,7 @@ const Landing = () => {
               <Sparkles className="w-4 h-4 text-[var(--secondary)]" />
               <span className="text-xs font-bold uppercase tracking-widest text-[var(--secondary)]">The Digital Sanctuary</span>
             </div>
-            <h1 className="text-6xl md:text-8xl font-black leading-tight mb-6 tracking-tighter">
+            <h1 className="text-6xl md:text-8xl font-black leading-tight mb-6 tracking-tighter text-glow">
               Unlock Your <span className="text-gradient">Flow State</span>
             </h1>
             <p className="text-lg md:text-xl text-[var(--on-surface-variant)] leading-relaxed mb-10 max-w-lg">
@@ -58,6 +60,7 @@ const Landing = () => {
             transition={{ duration: 1.2, delay: 0.2 }}
             className="relative"
           >
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--primary-dim)] opacity-20 blur-[120px] rounded-full"></div>
             <HeroScene />
           </motion.div>
         </div>
@@ -71,8 +74,11 @@ const Landing = () => {
             <p className="text-[var(--on-surface-variant)]">Precision tools for the modern academic.</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            <motion.div whileHover={{ y: -5 }} className="bento-card col-span-1 md:col-span-2 relative overflow-hidden group">
+          <div className="grid md:grid-cols-3 gap-6 stagger-reveal">
+            <motion.div 
+              whileHover={{ scale: 1.02 }} 
+              className="bento-card card-3d-hover holographic-border glitch-hover col-span-1 md:col-span-2 relative overflow-hidden group border border-[var(--outline-variant)] shadow-2xl"
+            >
               <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity">
                 <Sparkles className="w-32 h-32 text-[var(--primary)]" />
               </div>
@@ -83,19 +89,28 @@ const Landing = () => {
               </div>
             </motion.div>
 
-            <motion.div whileHover={{ y: -5 }} className="bento-card relative overflow-hidden group">
+            <motion.div 
+              whileHover={{ scale: 1.02 }} 
+              className="bento-card card-3d-hover holographic-border glitch-hover relative overflow-hidden group border border-[var(--outline-variant)] shadow-2xl"
+            >
               <div className="chip bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4">Security</div>
               <h3 className="text-2xl font-bold mb-4">Safe Harbor</h3>
               <p className="text-[var(--on-surface-variant)]">End-to-end encrypted study vaults. Your intellectual assets are protected within our "Digital Sanctuary" philosophy.</p>
             </motion.div>
 
-            <motion.div whileHover={{ y: -5 }} className="bento-card relative overflow-hidden group">
+            <motion.div 
+              whileHover={{ scale: 1.02 }} 
+              className="bento-card card-3d-hover holographic-border glitch-hover relative overflow-hidden group border border-[var(--outline-variant)] shadow-2xl"
+            >
               <div className="chip bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">Immersive</div>
               <h3 className="text-2xl font-bold mb-4">Glass UI</h3>
               <p className="text-[var(--on-surface-variant)]">Minimal friction, maximum depth. Our interface is designed to disappear, leaving only you and your work.</p>
             </motion.div>
 
-            <motion.div whileHover={{ y: -5 }} className="bento-card col-span-1 md:col-span-2 relative overflow-hidden group bg-gradient-to-br from-[var(--surface-container)] to-[var(--surface-container-high)]">
+            <motion.div 
+              whileHover={{ scale: 1.02 }} 
+              className="bento-card card-3d-hover col-span-1 md:col-span-2 relative overflow-hidden group bg-gradient-to-br from-[var(--surface-container)] to-[var(--surface-container-high)] border border-[var(--outline-variant)]"
+            >
               <h3 className="text-3xl font-bold mb-4">Academic Velocity</h3>
               <p className="text-[var(--on-surface-variant)] mb-8">Reduce context switching by 40% with unified resource management.</p>
               <div className="flex gap-4">
@@ -116,12 +131,17 @@ const Landing = () => {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-[var(--outline-variant)] bg-[var(--surface)]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2">
-            <BookOpen className="text-[var(--primary)] w-6 h-6" />
-            <span className="font-bold tracking-tighter">CHATVVP</span>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8">
+              <img src="/logo.png" alt="Chat.VVP Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="font-bold tracking-tighter leading-none">CHAT.<span className="text-[var(--primary)]">VVP</span></span>
+              <span className="text-[6px] text-[var(--on-surface-variant)] uppercase font-medium">College Study Assistant</span>
+            </div>
           </div>
           <div className="text-[var(--on-surface-variant)] text-sm">
-            © 2026 ChatVVP. Built with <span className="text-[var(--primary)]">Precision</span>.
+            © 2026 Chat.VVP. Built with <span className="text-[var(--primary)]">Precision</span>.
           </div>
           <div className="flex gap-6">
             <Github className="w-5 h-5 text-[var(--on-surface-variant)] hover:text-[var(--primary)] transition-colors cursor-pointer" />

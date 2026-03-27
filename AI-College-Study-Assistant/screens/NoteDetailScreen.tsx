@@ -23,11 +23,17 @@ export default function NoteDetailScreen() {
   const [errorYt, setErrorYt] = useState('');
 
   const handleExplainAI = async () => {
+    const textToExplain = note.formattedText || note.preview;
+    if (!textToExplain) {
+      setErrorAi('No content available to explain.');
+      return;
+    }
+
     setLoadingAi(true);
     setErrorAi('');
     setAiExplanation('');
     try {
-      const response = await api.post('/student/explain', { noteId: note._id });
+      const response = await api.post('/student/explain', { text: textToExplain });
       setAiExplanation(response.data.explanation || response.data || 'No explanation generated.');
     } catch (error) {
       console.log('AI API Error:', error);
@@ -38,27 +44,14 @@ export default function NoteDetailScreen() {
   };
 
   const handleWatchYouTube = async () => {
-    setLoadingYt(true);
-    setErrorYt('');
-    try {
-      const response = await api.get('/student/youtube', {
-        params: { subject: note.subject || '', topic: note.topic || '' },
-      });
-      const videos = response.data?.videos;
-      const videoUrl = Array.isArray(videos) && videos.length > 0 ? videos[0].url : null;
-
-      if (videoUrl) {
-        await Linking.openURL(videoUrl);
-      } else {
-        const fallback = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${note.subject || ''} ${note.topic || ''}`)}`;
-        await Linking.openURL(fallback);
-      }
-    } catch (error) {
-      console.log('YouTube API Error:', error);
-      setErrorYt('Failed to fetch YouTube link.');
-    } finally {
-      setLoadingYt(false);
+    if (note.youtubeUrl) {
+      await Linking.openURL(note.youtubeUrl);
+      return;
     }
+
+    // Fallback search if no direct URL
+    const fallback = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${note.subject || ''} ${note.topic || ''}`)}`;
+    await Linking.openURL(fallback);
   };
 
   return (

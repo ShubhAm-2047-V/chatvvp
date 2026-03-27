@@ -20,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../services/api';
+import { Logo } from '../components/Logo';
 
 const { width } = Dimensions.get('window');
 
@@ -64,8 +65,11 @@ export default function LoginScreen() {
 
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('role', role);
-      await AsyncStorage.setItem('name', response.data.name || '');
-      await AsyncStorage.setItem('email', response.data.email || '');
+      await AsyncStorage.setItem('name', response.data.user.name || '');
+      await AsyncStorage.setItem('email', response.data.user.email || '');
+      if (response.data.user.branch) await AsyncStorage.setItem('branch', response.data.user.branch);
+      if (response.data.user.year) await AsyncStorage.setItem('year', String(response.data.user.year));
+      
       navigation.replace('Main');
     } catch (error: any) {
       console.log('Login error:', error);
@@ -89,13 +93,15 @@ export default function LoginScreen() {
             {/* Glassmorphism Card with Pixel Edges */}
             <View style={styles.cardContainer}>
               <BlurView intensity={50} tint="light" style={styles.blurCard}>
-                <View style={styles.header}>
-                  <Text style={styles.title}>Sign in with email</Text>
-                  <Text style={styles.subtitle}>
-                    Make a new doc to bring your words, data, and teams together. For free
-                  </Text>
+                <View style={StyleSheet.absoluteFill}>
+                  <View style={styles.watermarkContainer}>
+                    <Text style={styles.watermarkText}>CHAT. VVP</Text>
+                  </View>
                 </View>
 
+                <View style={styles.header}>
+                  <Text style={styles.headerTitle}>CHAT. VVP</Text>
+                </View>
                 <View style={styles.form}>
                   {/* Email Input */}
                   <View style={styles.inputArea}>
@@ -149,26 +155,6 @@ export default function LoginScreen() {
                       </TouchableOpacity>
                     </Animated.View>
                   </View>
-
-                  {/* Divider */}
-                  <View style={styles.divider}>
-                    <View style={styles.dividerLine} />
-                    <Text style={styles.dividerText}>or continue with</Text>
-                    <View style={styles.dividerLine} />
-                  </View>
-
-                  {/* Social Buttons */}
-                  <View style={styles.socialContainer}>
-                    <TouchableOpacity style={styles.socialBtn}>
-                      <Ionicons name="logo-google" size={20} color="#000" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.socialBtn}>
-                      <Ionicons name="logo-apple" size={20} color="#000" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.socialBtn}>
-                      <Ionicons name="logo-facebook" size={20} color="#000" />
-                    </TouchableOpacity>
-                  </View>
                 </View>
               </BlurView>
             </View>
@@ -217,13 +203,14 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   header: {
-    marginBottom: 28,
+    marginBottom: 20,
+    alignItems: 'center',
   },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '900',
     color: '#0f172a',
-    marginBottom: 8,
+    letterSpacing: 2,
   },
   subtitle: {
     fontSize: 14,
@@ -316,5 +303,18 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  watermarkContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.15, // Increased opacity as requested
+  },
+  watermarkText: {
+    fontSize: 100, // Slightly larger
+    fontWeight: '900',
+    color: '#5b6cff', // Colorful (Primary Blue)
+    textAlign: 'center',
+    transform: [{ rotate: '-15deg' }],
   },
 });

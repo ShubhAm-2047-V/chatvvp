@@ -5,6 +5,9 @@ const Video = require('../models/Video');
 const { preprocessImage, cleanOCRText } = require('../utils/ocrHelper');
 const { cleanTextWithAI } = require('../utils/aiHelper');
 const { formatNotes } = require('../utils/noteFormatter');
+const User = require('../models/User'); // Imported User model
+const { sendNoteNotification } = require('../utils/emailHelper');
+
 
 // Cloudinary Configuration
 cloudinary.config({
@@ -145,6 +148,38 @@ const uploadNote = async (req, res) => {
       }
     });
 
+    // --- ASYNC EMAIL NOTIFICATION ---
+    // Start notification process in background to not block the response
+    (async () => {
+      try {
+        console.log(`Starting email notification for note: ${note.topic}`);
+        
+        // Find students of the same branch and year
+        const students = await User.find({
+          role: 'student',
+          branch: note.branch,
+          year: note.year,
+          isBlocked: false
+        }).select('email');
+
+        const studentEmails = students.map(s => s.email).filter(email => !!email);
+        
+        if (studentEmails.length > 0) {
+          console.log(`Sending emails to ${studentEmails.length} students...`);
+          await sendNoteNotification(
+            studentEmails, 
+            { subject: note.subject, topic: note.topic, branch: note.branch, year: note.year },
+            req.user.name || 'Your Teacher'
+          );
+          console.log('Notification emails sent successfully.');
+        } else {
+          console.log('No students found to notify for this branch and year.');
+        }
+      } catch (emailError) {
+        console.error('Failed to send notification emails:', emailError.message);
+      }
+    })();
+
   } catch (error) {
     console.error('Teacher Upload Note Error:', error);
     res.status(500).json({ 
@@ -220,6 +255,31 @@ const createTextNote = async (req, res) => {
       message: 'Text note created successfully',
       note
     });
+
+    // --- ASYNC EMAIL NOTIFICATION ---
+    (async () => {
+      try {
+        // Find students of the same branch and year (Note: text notes currently default to branch 'All' and year 0 in models if not specified)
+        const students = await User.find({
+          role: 'student',
+          branch: note.branch,
+          year: note.year,
+          isBlocked: false
+        }).select('email');
+
+        const studentEmails = students.map(s => s.email).filter(email => !!email);
+        
+        if (studentEmails.length > 0) {
+          await sendNoteNotification(
+            studentEmails, 
+            { subject: note.subject, topic: note.topic, branch: note.branch, year: note.year },
+            req.user.name || 'Your Teacher'
+          );
+        }
+      } catch (emailError) {
+        console.error('Failed to send notification emails:', emailError.message);
+      }
+    })();
 
   } catch (error) {
     console.error('Create Text Note Error:', error);

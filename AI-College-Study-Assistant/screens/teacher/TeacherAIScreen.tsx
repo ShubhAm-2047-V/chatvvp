@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 2, 
     borderColor: THEME_COLORS.primary,
     ...PIXEL_SHADOWS.card,
-    paddingBottom: Platform.OS === 'ios' ? 30 : 12
+    paddingBottom: 80, // Account for absolute tab bar (65) + margin
   },
   inputContainer: { 
     flexDirection: 'row', 

@@ -47,6 +47,24 @@
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border: 1px solid var(--outline-variant);
+    box-shadow: inset 0 0 20px rgba(163, 166, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .card-3d-hover {
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+  }
+
+  .card-3d-hover:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(10px);
   }
 
   .bento-card {
@@ -101,8 +119,65 @@
   background-clip: text;
 }
 
-.indigo-glow {
-  box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+.text-glow {
+  text-shadow: 0 0 10px rgba(163, 166, 255, 0.5), 0 0 20px rgba(163, 166, 255, 0.3);
+}
+
+.holographic-border {
+  position: relative;
+  background: var(--surface-container);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.holographic-border::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  margin: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(163, 166, 255, 0.3) 30%,
+    rgba(105, 246, 184, 0.3) 50%,
+    rgba(163, 166, 255, 0.3) 70%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  animation: holographic-shimmer 4s linear infinite;
+}
+
+@keyframes holographic-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.glitch-hover:hover {
+  animation: glitch-anim 0.3s cubic-bezier(.25,.46,.45,.94) both infinite;
+}
+
+@keyframes glitch-anim {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.magnetic-cursor {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
 }
 
 /* Fallbacks to maintain backward compatibility during migration */
@@ -120,71 +195,128 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: radial-gradient(circle at 50% 50%, #0a1128 0%, var(--surface) 100%);
+  background-color: var(--surface);
   overflow: hidden;
 }
 
 .cloud-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(150px);
-  opacity: 0.6;
+  filter: blur(80px);
+  opacity: 0.4;
   mix-blend-mode: screen;
-  animation: move-cloud 25s infinite alternate ease-in-out;
+  animation: move-cloud 20s infinite alternate-reverse ease-in-out;
 }
 
 .blob-1 {
-  width: 800px;
-  height: 800px;
+  width: 600px;
+  height: 600px;
   background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-  top: -20%;
+  top: -10%;
   left: -10%;
-  animation-duration: 30s;
+  animation-duration: 25s;
 }
 
 .blob-2 {
-  width: 700px;
-  height: 700px;
+  width: 500px;
+  height: 500px;
   background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
-  bottom: -10%;
-  right: -10%;
-  animation-duration: 35s;
-  animation-delay: -7s;
+  bottom: -5%;
+  right: -5%;
+  animation-duration: 30s;
+  animation-delay: -5s;
 }
 
 .blob-3 {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, #6366f1 0%, transparent 70%);
-  top: 30%;
-  left: 20%;
-  animation-duration: 40s;
-  animation-delay: -15s;
-}
-
-.blob-4 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
-  bottom: 20%;
-  left: 10%;
-  opacity: 0.3;
-  animation-duration: 45s;
-  animation-delay: -20s;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--primary-dim) 0%, transparent 70%);
+  top: 40%;
+  left: 30%;
+  animation-duration: 35s;
+  animation-delay: -10s;
 }
 
 @keyframes move-cloud {
   0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  33% { transform: translate(150px, 100px) scale(1.2) rotate(10deg); }
-  66% { transform: translate(-100px, 150px) scale(0.8) rotate(-10deg); }
+  33% { transform: translate(100px, 50px) scale(1.1) rotate(10deg); }
+  66% { transform: translate(-50px, 100px) scale(0.9) rotate(-10deg); }
   100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes float-complex {
+  0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+  33% { transform: translateY(-15px) translateX(5px) rotate(2deg); }
+  66% { transform: translateY(5px) translateX(-10px) rotate(-1deg); }
+  100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.5); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-float-complex {
+  animation: float-complex 8s ease-in-out infinite;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 30px var(--primary-dim);
+  border-color: var(--primary);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.stagger-reveal > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .bg-overlay-noise {
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.04;
-  mix-blend-mode: overlay;
+  opacity: 0.03;
   pointer-events: none;
 }

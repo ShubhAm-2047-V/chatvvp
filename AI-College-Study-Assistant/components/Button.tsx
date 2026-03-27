@@ -9,10 +9,11 @@ interface ButtonProps {
   textStyle?: StyleProp<TextStyle>;
   type?: 'primary' | 'secondary' | 'outline' | 'glass';
   loading?: boolean;
+  disabled?: boolean;
   icon?: React.ReactNode;
 }
 
-export default function Button({ title, onPress, style, textStyle, type = 'primary', loading = false, icon }: ButtonProps) {
+export default function Button({ title, onPress, style, textStyle, type = 'primary', loading = false, disabled = false, icon }: ButtonProps) {
   const scale = new Animated.Value(1);
 
   const handlePressIn = () => {
@@ -35,10 +36,11 @@ export default function Button({ title, onPress, style, textStyle, type = 'prima
           type === 'secondary' && styles.secondary,
           type === 'outline' && styles.outline,
           type === 'glass' && styles.glass,
+          (disabled || loading) && styles.disabled,
           style
         ]}
         onPress={onPress}
-        disabled={loading}
+        disabled={loading || disabled}
       >
         <View style={styles.content}>
           {loading ? (
@@ -118,5 +120,10 @@ const styles = StyleSheet.create({
   },
   glassText: {
     color: THEME_COLORS.primary,
+  },
+  disabled: {
+    opacity: 0.5,
+    borderColor: '#ccc',
+    backgroundColor: '#eee',
   }
 });
